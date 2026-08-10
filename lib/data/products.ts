@@ -2,6 +2,8 @@ import type { Product, ProductCategory, SizeOption, LengthOption, HijabOption, P
 
 // ─── Site Configuration ───────────────────────────────
 export const SITE_CONFIG: SiteConfig = {
+  announcement: 'First Purchase Offer | Free Shipping Above ₹1999',
+  productNote: '*Lengths 50–54 available on Prepaid / Online payment orders only.',
   freeShippingAbove: 1999,
   codFee: 49,
   taxRate: 0.05,

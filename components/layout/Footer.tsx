@@ -36,7 +36,7 @@ export function Footer() {
     <footer className="bg-[#111111] text-white" role="contentinfo">
       {/* Newsletter */}
       <div className="border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+        <div className="site-container py-12 lg:py-16">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="font-heading text-2xl lg:text-3xl mb-3">
               Join Our Exclusive Circle
@@ -74,7 +74,7 @@ export function Footer() {
       </div>
 
       {/* Main footer content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+      <div className="site-container py-12 lg:py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
@@ -210,7 +210,7 @@ export function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="site-container py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-gray-500 text-xs">
               © {new Date().getFullYear()} Emirates Abaya World. All rights reserved.

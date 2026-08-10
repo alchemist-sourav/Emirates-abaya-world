@@ -5,6 +5,7 @@ import { getProductBySlug, getRelatedProducts, getProductReviews } from '@/lib/s
 import { ProductDetailClient } from './ProductDetailClient'
 import { ProductGrid } from '@/components/products/ProductGrid'
 import { ProductReviews } from '@/components/products/ProductReviews'
+import { FloatingReviewsTab } from '@/components/products/FloatingReviewsTab'
 import { RecentlyViewed } from '@/components/home/RecentlyViewed'
 
 interface Props {
@@ -56,8 +57,11 @@ export default async function ProductDetailPage({ params }: Props) {
         {/* Product detail */}
         <ProductDetailClient product={product} />
 
+        {/* Floating reviews tab */}
+        <FloatingReviewsTab />
+
         {/* Reviews */}
-        <div className="mt-10">
+        <div className="mt-10 scroll-mt-24" id="reviews">
           <ProductReviews reviews={reviews} rating={product.rating} reviewCount={product.reviewCount} />
         </div>
 

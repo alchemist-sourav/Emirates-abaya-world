@@ -1,22 +1,19 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, Star, ShieldCheck, Truck, RotateCcw, BadgeCheck, Zap, CheckCircle2 } from 'lucide-react'
+import { ArrowRight, Star } from 'lucide-react'
 import { ProductGrid } from '@/components/products/ProductGrid'
 import { RecentlyViewed } from '@/components/home/RecentlyViewed'
-import { formatINR, discountPercent } from '@/lib/utils'
 import {
-  getDealsProducts,
   getBestSellers,
   getNewArrivals,
   getCategories,
-  getOccasions,
   getLuxuryProducts,
-  getTrendingProducts,
+  getCollections,
   getCustomerReviews,
   getSiteConfig,
+  getProducts,
 } from '@/lib/services/products'
-import type { Product } from '@/types/product'
 
 export const metadata: Metadata = {
   title: 'Emirates Abaya World – Premium Abayas & Hijabs, Delivered Across India',
@@ -41,13 +38,13 @@ function SectionHeader({
   linkLabel?: string
 }) {
   return (
-    <div className="flex items-end justify-between mb-5">
+    <div className="flex items-end justify-between mb-6">
       <div>
-        {eyebrow && <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#C9A227] block mb-1">{eyebrow}</span>}
-        <h2 className="text-lg sm:text-2xl font-bold text-[#111111]">{title}</h2>
+        {eyebrow && <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#C9A227] block mb-1.5">{eyebrow}</span>}
+        <h2 className="font-heading text-xl sm:text-2xl font-bold text-[#111111]">{title}</h2>
       </div>
       {href && (
-        <Link href={href} className="flex items-center gap-1 text-sm font-semibold text-[#111111] hover:text-[#C9A227] whitespace-nowrap">
+        <Link href={href} className="flex items-center gap-1 text-sm font-medium text-[#111111] hover:text-[#C9A227] whitespace-nowrap">
           {linkLabel} <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Link>
       )}
@@ -55,248 +52,158 @@ function SectionHeader({
   )
 }
 
-function DealsCard({ product }: { product: Product }) {
-  const discount = discountPercent(product.originalPrice, product.price)
+function EditorialBanner({
+  image,
+  eyebrow,
+  title,
+  description,
+  href,
+  cta = 'SHOP NOW',
+  overlay = false,
+  tall = false,
+}: {
+  image: string
+  eyebrow?: string
+  title: string
+  description?: string
+  href: string
+  cta?: string
+  overlay?: boolean
+  tall?: boolean
+}) {
   return (
     <Link
-      href={`/products/${product.slug}`}
-      className="group flex-shrink-0 w-[168px] sm:w-[190px] bg-white border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all overflow-hidden flex flex-col"
+      href={href}
+      className={cn(
+        'group relative block overflow-hidden bg-[#F7F4F1]',
+        tall ? 'aspect-[4/5] sm:aspect-[3/4]' : 'aspect-[4/5] sm:aspect-[16/10]'
+      )}
     >
-      <div className="relative aspect-[4/5] bg-gray-50 overflow-hidden">
-        <Image
-          src={product.images[0] ?? '/placeholder.jpg'}
-          alt={product.name}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
-          sizes="190px"
-        />
-        {discount > 0 && (
-          <span className="absolute top-2 left-2 bg-red-600 text-white text-[11px] font-bold px-2 py-0.5 leading-none">
-            {discount}% OFF
+      <Image
+        src={image}
+        alt={title}
+        fill
+        className="object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+        sizes="(max-width: 640px) 100vw, 50vw"
+      />
+      {overlay && <div className="absolute inset-0 bg-black/25" aria-hidden="true" />}
+      <div className={cn(
+        'absolute inset-0 flex flex-col justify-end p-6 lg:p-8',
+        overlay ? 'text-white' : 'text-[#111111]'
+      )}>
+        {eyebrow && (
+          <span className={cn(
+            'text-[10px] font-semibold uppercase tracking-[0.28em] mb-2',
+            overlay ? 'text-white/90' : 'text-[#C9A227]'
+          )}>
+            {eyebrow}
           </span>
         )}
-      </div>
-      <div className="p-2.5 flex flex-col gap-0.5 flex-1">
-        <h3 className="text-[12px] text-gray-800 line-clamp-2 leading-snug group-hover:underline">{product.name}</h3>
-        <div className="flex items-baseline gap-1.5 mt-0.5">
-          <span className="text-sm font-bold text-[#111111]">{formatINR(product.price)}</span>
-          {product.originalPrice && (
-            <span className="text-[11px] text-gray-400 line-through">{formatINR(product.originalPrice)}</span>
-          )}
-        </div>
-        {discount > 0 && <span className="text-[11px] font-semibold text-green-600">{discount}% off</span>}
+        <h3 className={cn('font-heading text-2xl lg:text-3xl font-bold leading-tight', overlay ? 'text-white' : 'text-[#111111]')}>
+          {title}
+        </h3>
+        {description && (
+          <p className={cn('mt-2 text-sm max-w-sm', overlay ? 'text-white/85' : 'text-[#6B7280]')}>
+            {description}
+          </p>
+        )}
+        <span className="mt-4 inline-flex items-center gap-2 text-[12px] font-semibold tracking-[0.18em] pb-1 border-b transition-colors"
+          style={{ borderColor: overlay ? 'rgba(255,255,255,0.6)' : '#C9A227', color: overlay ? '#fff' : '#111111' }}>
+          {cta}
+          <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" aria-hidden="true" />
+        </span>
       </div>
     </Link>
   )
 }
 
-export default async function HomePage() {
-  const [deals, bestSellers, newArrivals, categories, occasions, luxury, trending, reviews, config] =
-    await Promise.all([
-      getDealsProducts(10),
-      getBestSellers(8),
-      getNewArrivals(8),
-      getCategories(),
-      getOccasions(),
-      getLuxuryProducts(4),
-      getTrendingProducts(8),
-      getCustomerReviews(6),
-      getSiteConfig(),
-    ])
+// Local cn (server component — no clsx tailwind-merge needed)
+function cn(...classes: (string | false | undefined)[]) {
+  return classes.filter(Boolean).join(' ')
+}
 
-  const promoItems: { icon: typeof Truck; label: string }[] = []
-  if (config.claims.freeShipping) promoItems.push({ icon: Truck, label: `Free Shipping above ${formatINR(config.freeShippingAbove)}` })
-  if (config.claims.codAvailable) promoItems.push({ icon: Zap, label: 'COD Available across India' })
-  if (config.claims.easyReturns) promoItems.push({ icon: RotateCcw, label: 'Easy 14-day Returns' })
-  if (config.claims.fastDelivery) promoItems.push({ icon: Truck, label: 'Fast Pan-India Delivery' })
+export default async function HomePage() {
+  const [
+    bestSellers, newArrivals, categories, luxury,
+    collections, reviews, config, hijabs, prayer,
+  ] = await Promise.all([
+    getBestSellers(4),
+    getNewArrivals(4),
+    getCategories(),
+    getLuxuryProducts(4),
+    getCollections(),
+    getCustomerReviews(6),
+    getSiteConfig(),
+    getProducts({ categories: ['hijabs'] }).then((p) => p.slice(0, 4)),
+    getProducts({ categories: ['prayer-abayas'] }).then((p) => p.slice(0, 4)),
+  ])
+
+  const heroImage = 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1600&q=80'
+  const newBanner = collections.find((c) => c.slug === 'new-arrivals')?.image
+  const luxBanner = collections.find((c) => c.slug === 'luxury')?.image
+  const saleBanner = collections.find((c) => c.slug === 'sale')?.image
 
   return (
     <>
-      {/* ═══════════ 1. HERO / OFFER BANNER ═══════════ */}
-      <section className="bg-[#F8F6F2] border-b border-[#E5E5E5]" aria-label="Featured offer">
-        <div className="container-xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.2fr_1fr] gap-6 py-6 lg:py-10 items-center">
-            {/* Copy */}
-            <div>
-              <span className="inline-flex items-center gap-1.5 bg-[#111111] text-white text-[10px] font-semibold uppercase tracking-[0.2em] px-3 py-1 mb-4">
-                <BadgeCheck className="h-3.5 w-3.5 text-[#C9A227]" aria-hidden="true" />
-                Ramadan &amp; Eid Collection 2026
-              </span>
-              <h1 className="font-heading text-3xl sm:text-4xl lg:text-[44px] font-bold text-[#111111] leading-[1.1] mb-3">
-                Elegant Abayas for <span className="text-[#C9A227]">Every Occasion</span>
-              </h1>
-              <p className="text-[#6B7280] text-sm sm:text-base mb-6 max-w-md leading-relaxed">
-                Premium modest fashion delivered across India. Handpicked luxury, everyday and prayer abayas with matching hijabs.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Link href="/shop?category=abayas" className="btn-primary btn-lg">
-                  Shop Abayas <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </Link>
-                <Link href="/shop?sale=true" className="btn-secondary btn-lg">
-                  View Offers
-                </Link>
-              </div>
-
-              {/* Promo chips */}
-              {promoItems.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-6">
-                  {promoItems.map(({ icon: Icon, label }) => (
-                    <span key={label} className="inline-flex items-center gap-1.5 bg-white border border-[#E5E5E5] px-3 py-1.5 text-[11px] font-semibold text-[#111111]">
-                      <Icon className="h-3.5 w-3.5 text-[#C9A227]" aria-hidden="true" />
-                      {label}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Visual */}
-            <div className="relative hidden md:block">
-              <div className="grid grid-cols-2 gap-3">
-                <Image
-                  src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500&q=80"
-                  alt="Luxury black abaya"
-                  width={240}
-                  height={300}
-                  className="object-cover w-full aspect-[4/5] border border-[#E5E5E5]"
-                  sizes="(min-width: 1024px) 240px, 40vw"
-                />
-                <Image
-                  src="https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=500&q=80"
-                  alt="Modern open abaya"
-                  width={240}
-                  height={300}
-                  className="object-cover w-full aspect-[4/5] border border-[#E5E5E5] mt-8"
-                  sizes="(min-width: 1024px) 240px, 40vw"
-                />
-              </div>
-            </div>
+      {/* ═══════════ 1. HERO — full-width editorial banner ═══════════ */}
+      <section className="hero" aria-label="Featured collection">
+        <div className="hero-image">
+          <Image
+            src={heroImage}
+            alt="Luxury abaya collection"
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+          />
+        </div>
+        <div className="hero-inner">
+          <div className="hero-content">
+            <span className="eyebrow">Emirates Abaya World</span>
+            <h1>Modesty Meets Elegance</h1>
+            <p>Discover our latest abaya collection — handcrafted modest fashion for the modern woman across India.</p>
+            <Link href="/shop?tag=new" className="hero-cta">
+              SHOP NOW
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* ═══════════ 2. SHOP BY CATEGORY ═══════════ */}
-      <section className="py-8 lg:py-12 bg-white" aria-labelledby="category-heading">
-        <div className="container-xl">
+      {/* ═══════════ 2. COLLECTION BANNERS — editorial ═══════════ */}
+      <section className="py-10 lg:py-14 bg-white" aria-labelledby="collection-heading">
+        <div className="site-container">
+          <SectionHeader eyebrow="Collections" title="Shop by Collection" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <EditorialBanner image={newBanner ?? heroImage} eyebrow="Just in" title="New Arrivals" href="/shop?tag=new" />
+            <EditorialBanner image={luxBanner ?? heroImage} eyebrow="Premium" title="Luxury Abayas" href="/shop?collection=luxury" />
+            <EditorialBanner image={heroImage} eyebrow="Everyday" title="Everyday Modest Wear" href="/shop?category=everyday-abayas" />
+            <EditorialBanner image={saleBanner ?? heroImage} eyebrow="Limited time" title="Clearance Sale" href="/shop?sale=true" />
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ 3. CATEGORY COLLECTIONS ═══════════ */}
+      <section className="py-10 lg:py-14 bg-[#F9F6F2]" aria-labelledby="category-heading">
+        <div className="site-container">
           <SectionHeader eyebrow="Browse" title="Shop by Category" href="/shop" />
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-            {categories.map((cat) => (
+            {categories.slice(0, 4).map((cat) => (
               <Link
                 key={cat.id}
                 href={`/shop?category=${cat.slug}`}
-                className="group flex items-center gap-3 bg-[#F8F6F2] border border-[#E5E5E5] hover:border-[#111111] p-3 transition-colors"
-              >
-                <div className="relative w-14 h-16 flex-shrink-0 bg-white border border-[#E5E5E5] overflow-hidden">
-                  <Image
-                    src={cat.image}
-                    alt={cat.name}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    sizes="56px"
-                  />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[13px] font-semibold text-[#111111] leading-tight group-hover:text-[#C9A227] transition-colors">
-                    {cat.name}
-                  </p>
-                  <p className="text-[11px] text-[#6B7280] mt-0.5">{cat.productCount} styles</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════ 3. TODAY'S OFFERS ═══════════ */}
-      <section className="py-8 lg:py-12 bg-[#FFF7E6] border-y border-[#EED9A9]" aria-labelledby="deals-heading">
-        <div className="container-xl">
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-red-600 block mb-1">Limited time</span>
-              <h2 id="deals-heading" className="text-lg sm:text-2xl font-bold text-[#111111]">
-                Deals &amp; Offers
-              </h2>
-            </div>
-            <Link href="/shop?sale=true" className="flex items-center gap-1 text-sm font-semibold text-[#111111] hover:text-red-600 whitespace-nowrap">
-              See all deals <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
-          </div>
-          <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar snap-x">
-            {deals.map((product) => (
-              <div key={product.id} className="snap-start">
-                <DealsCard product={product} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════ 4. BEST SELLERS ═══════════ */}
-      <section className="py-8 lg:py-12 bg-white" aria-labelledby="best-heading">
-        <div className="container-xl">
-          <SectionHeader eyebrow="Most loved" title="Best Sellers" href="/shop?sort=best-selling" />
-          <ProductGrid products={bestSellers.slice(0, 4)} columns={4} priorityCount={4} />
-        </div>
-      </section>
-
-      {/* ═══════════ 5. NEW ARRIVALS ═══════════ */}
-      <section className="py-8 lg:py-12 bg-[#F8F6F2]" aria-labelledby="new-heading">
-        <div className="container-xl">
-          <SectionHeader eyebrow="Just in" title="New Arrivals" href="/shop?tag=new" />
-          <ProductGrid products={newArrivals.slice(0, 4)} columns={4} />
-        </div>
-      </section>
-
-      {/* ═══════════ 6. LUXURY COLLECTION ═══════════ */}
-      <section className="py-8 lg:py-12 bg-white" aria-labelledby="luxury-heading">
-        <div className="container-xl">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="h-8 w-1 bg-[#C9A227] flex-shrink-0" aria-hidden="true" />
-            <div className="flex-1">
-              <h2 id="luxury-heading" className="text-lg sm:text-2xl font-bold text-[#111111]">
-                Luxury Collection
-              </h2>
-              <p className="text-xs text-[#6B7280]">Hand-embroidered masterpieces for weddings &amp; special occasions</p>
-            </div>
-            <Link href="/shop?collection=luxury" className="flex items-center gap-1 text-sm font-semibold text-[#111111] hover:text-[#C9A227] whitespace-nowrap">
-              Explore <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-            {luxury.map((product) => (
-              <DealsCard key={product.id} product={product} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════ 7. SHOP BY OCCASION ═══════════ */}
-      <section className="py-8 lg:py-12 bg-[#111111]" aria-labelledby="occasion-heading">
-        <div className="container-xl">
-          <div className="flex items-end justify-between mb-6">
-            <div>
-              <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#C9A227] block mb-1">Find your fit</span>
-              <h2 id="occasion-heading" className="text-lg sm:text-2xl font-bold text-white">Shop by Occasion</h2>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            {occasions.map((occ) => (
-              <Link
-                key={occ.id}
-                href={`/shop?occasion=${occ.slug}`}
-                className="group relative aspect-[3/4] overflow-hidden bg-white/10 border border-white/10"
+                className="group relative block aspect-[4/5] overflow-hidden bg-white"
               >
                 <Image
-                  src={occ.image}
-                  alt={occ.name}
+                  src={cat.image}
+                  alt={cat.name}
                   fill
-                  className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300"
-                  sizes="(max-width: 640px) 50vw, 16vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 640px) 50vw, 25vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-3">
-                  <p className="text-white text-[12px] font-semibold leading-tight">{occ.name}</p>
-                  <p className="text-white/60 text-[10px] mt-0.5">{occ.productCount} styles</p>
+                <div className="absolute inset-0 bg-black/25 opacity-100 group-hover:opacity-70 transition-opacity" aria-hidden="true" />
+                <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+                  <p className="text-white font-heading text-base font-semibold leading-tight">{cat.name}</p>
+                  <p className="text-white/70 text-[11px] mt-0.5">{cat.productCount} styles</p>
                 </div>
               </Link>
             ))}
@@ -304,31 +211,78 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════ 8. TRENDING NOW ═══════════ */}
-      <section className="py-8 lg:py-12 bg-white" aria-labelledby="trending-heading">
-        <div className="container-xl">
-          <SectionHeader eyebrow="Most searched" title="Trending Now" href="/shop?sort=best-selling" />
-          <ProductGrid products={trending.slice(0, 4)} columns={4} />
+      {/* ═══════════ 4. NEW ARRIVALS ═══════════ */}
+      <section className="py-10 lg:py-14 bg-white" aria-labelledby="new-heading">
+        <div className="site-container">
+          <SectionHeader eyebrow="Just in" title="New Arrivals" href="/shop?tag=new" />
+          <ProductGrid products={newArrivals} columns={4} priorityCount={4} />
+        </div>
+      </section>
+
+      {/* ═══════════ 5. BESTSELLERS ═══════════ */}
+      <section className="py-10 lg:py-14 bg-[#F9F6F2]" aria-labelledby="best-heading">
+        <div className="site-container">
+          <SectionHeader eyebrow="Most loved" title="Best Sellers" href="/shop?sort=best-selling" />
+          <ProductGrid products={bestSellers} columns={4} />
+        </div>
+      </section>
+
+      {/* ═══════════ 6. FEATURED ABAYAS ═══════════ */}
+      <section className="py-10 lg:py-14 bg-white" aria-labelledby="featured-heading">
+        <div className="site-container lg:grid lg:grid-cols-[1fr_1.4fr] lg:gap-10 items-center">
+          <div className="mb-6 lg:mb-0">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#C9A227] block mb-2">The Edit</span>
+            <h2 id="featured-heading" className="font-heading text-2xl sm:text-3xl font-bold text-[#111111] mb-3">
+              Featured Abayas
+            </h2>
+            <p className="text-[#6B7280] text-sm mb-6 max-w-xs">
+              Hand-embroidered masterpieces for weddings, Eid and special occasions.
+            </p>
+            <Link href="/shop?collection=luxury" className="inline-flex items-center gap-2 text-sm font-semibold text-[#111111] border-b border-[#111111] pb-1 hover:border-[#C9A227] hover:text-[#C9A227] transition-colors">
+              Explore the Edit <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </div>
+          <ProductGrid products={luxury} columns={4} />
+        </div>
+      </section>
+
+      {/* ═══════════ 7. PRAYER / UMRAH COLLECTION ═══════════ */}
+      <section className="py-10 lg:py-14 bg-[#111111]" aria-labelledby="prayer-heading">
+        <div className="site-container">
+          <div className="flex items-end justify-between mb-6">
+            <div>
+              <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#C9A227] block mb-1.5">Serenity</span>
+              <h2 id="prayer-heading" className="font-heading text-xl sm:text-2xl font-bold text-white">Prayer / Umrah Collection</h2>
+            </div>
+            <Link href="/shop?category=prayer-abayas" className="text-sm text-white/80 hover:text-[#C9A227] whitespace-nowrap flex items-center gap-1">
+              View all <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </div>
+          <ProductGrid products={prayer} columns={4} />
+        </div>
+      </section>
+
+      {/* ═══════════ 8. HIJABS ═══════════ */}
+      <section className="py-10 lg:py-14 bg-white" aria-labelledby="hijab-heading">
+        <div className="site-container">
+          <SectionHeader eyebrow="Complement" title="Matching Hijabs" href="/shop?category=hijabs" />
+          <ProductGrid products={hijabs} columns={4} />
         </div>
       </section>
 
       {/* ═══════════ 9. CUSTOMER REVIEWS ═══════════ */}
-      <section className="py-8 lg:py-12 bg-[#F8F6F2]" aria-labelledby="reviews-heading">
-        <div className="container-xl">
-          <div className="flex items-center gap-2 mb-6">
-            <Star className="h-5 w-5 fill-[#f5a623] text-[#f5a623]" aria-hidden="true" />
-            <h2 id="reviews-heading" className="text-lg sm:text-2xl font-bold text-[#111111]">
-              Loved by Women Across India
-            </h2>
-          </div>
+      <section className="py-10 lg:py-14 bg-[#F9F6F2]" aria-labelledby="reviews-heading">
+        <div className="site-container">
+          <SectionHeader eyebrow="Loved by women" title="Customer Reviews" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {reviews.map((review) => (
-              <figure key={review.id} className="bg-white border border-[#E5E5E5] p-5">
-                <div className="flex items-center gap-1 mb-3">
+              <figure key={review.id} className="bg-white border border-[#E5E5E5] p-6">
+                <div className="flex items-center gap-0.5 mb-3">
                   {[1, 2, 3, 4, 5].map((i) => (
                     <Star
                       key={i}
-                      className={i <= review.rating ? 'h-3.5 w-3.5 fill-[#f5a623] text-[#f5a623]' : 'h-3.5 w-3.5 fill-gray-200 text-gray-200'}
+                      className={i <= review.rating ? 'h-3.5 w-3.5 fill-[#C9A227] text-[#C9A227]' : 'h-3.5 w-3.5 fill-gray-200 text-gray-200'}
+                      strokeWidth={1}
                       aria-hidden="true"
                     />
                   ))}
@@ -336,14 +290,7 @@ export default async function HomePage() {
                 <blockquote className="text-sm text-[#4b5563] leading-relaxed mb-4">&ldquo;{review.comment}&rdquo;</blockquote>
                 <figcaption>
                   <p className="text-[13px] font-semibold text-[#111111]">{review.userName}</p>
-                  <p className="text-[11px] text-[#6B7280] flex items-center gap-1">
-                    {review.location}
-                    {review.verifiedPurchase && (
-                      <span className="flex items-center gap-0.5 text-green-600 font-medium">
-                        <CheckCircle2 className="h-3 w-3" aria-hidden="true" /> Verified Purchase
-                      </span>
-                    )}
-                  </p>
+                  <p className="text-[11px] text-[#6B7280]">{review.location}</p>
                 </figcaption>
               </figure>
             ))}
@@ -351,30 +298,24 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════ 10. TRUST / WHY SHOP WITH US ═══════════ */}
-      <section className="py-8 lg:py-12 bg-white border-b border-[#E5E5E5]" aria-label="Why shop with us">
-        <div className="container-xl">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {[
-              { icon: ShieldCheck, title: 'Secure Payments', sub: 'SSL-encrypted, UPI & cards' },
-              { icon: Zap, title: 'COD Available', sub: 'Pay when it arrives' },
-              { icon: RotateCcw, title: 'Easy Returns', sub: '14-day hassle-free policy' },
-              { icon: Truck, title: 'Fast Delivery', sub: 'Pan-India shipping' },
-            ].map(({ icon: Icon, title, sub }) => (
-              <div key={title} className="flex items-start gap-3 border border-[#E5E5E5] p-4 bg-[#F8F6F2]">
-                <Icon className="h-6 w-6 text-[#C9A227] flex-shrink-0" aria-hidden="true" />
-                <div>
-                  <p className="text-[13px] font-semibold text-[#111111] leading-tight">{title}</p>
-                  <p className="text-[11px] text-[#6B7280] mt-0.5">{sub}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* ═══════════ 10. ABOUT / BRAND STORY ═══════════ */}
+      <section className="py-12 lg:py-16 bg-white" aria-labelledby="about-heading">
+        <div className="site-container max-w-3xl text-center">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#C9A227] block mb-3">Our Story</span>
+          <h2 id="about-heading" className="font-heading text-2xl sm:text-3xl font-bold text-[#111111] mb-4">
+            Elegance, Tailored for the Modern Woman
+          </h2>
+          <p className="text-[#6B7280] text-sm sm:text-base leading-relaxed mb-6">
+            Emirates Abaya World brings refined, handcrafted modest fashion to women across India. Each abaya is designed for grace, comfort and every occasion — from everyday elegance to weddings and prayer. Quality-checked, delivered pan-India, with {config.claims.freeShipping ? `free shipping above ${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(config.freeShippingAbove)}, ` : ''}COD and easy returns.
+          </p>
+          <Link href="/about" className="inline-flex items-center gap-2 text-sm font-semibold text-[#111111] border-b border-[#111111] pb-1 hover:border-[#C9A227] hover:text-[#C9A227] transition-colors">
+            Read More <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
         </div>
       </section>
 
       {/* ═══════════ 11. RECENTLY VIEWED ═══════════ */}
-      <section className="py-8 lg:py-12 bg-[#F8F6F2]">
+      <section className="pb-12 lg:pb-16 bg-white border-t border-[#E5E5E5]">
         <RecentlyViewed />
       </section>
     </>

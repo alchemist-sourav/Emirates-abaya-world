@@ -8,7 +8,6 @@ import { FilterSidebar, type FilterState } from '@/components/shop/FilterSidebar
 import { MobileFilters } from '@/components/shop/MobileFilters'
 import { SortSelect } from '@/components/shop/SortSelect'
 import { getProducts, getFilterOptions, type FilterOptions } from '@/lib/services/products'
-import { PRODUCT_SORT_OPTIONS } from '@/types/product'
 import type { Product } from '@/types/product'
 
 const DEFAULT_PRICE_BOUNDS: [number, number] = [0, 22000]
@@ -156,26 +155,23 @@ export function ShopClient() {
     : category ? category.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
     : 'All Abayas & Hijabs'
 
-  const sortLabel = PRODUCT_SORT_OPTIONS.find((o) => o.value === sort)?.label
-
   return (
     <div className="min-h-screen bg-[#F8F6F2]">
       {/* ── Page header ── */}
-      <div className="bg-white border-b border-[#E5E5E5] py-6">
-        <div className="container-xl">
-          <h1 className="text-2xl lg:text-3xl font-bold text-[#111111] mb-1">
+      <div className="bg-[#111111] text-white">
+        <div className="container-xl py-12 lg:py-14 text-center">
+          <h1 className="font-heading text-3xl lg:text-4xl font-bold mb-2">
             {title}
           </h1>
-          <p className="text-sm text-[#6B7280]">
+          <p className="text-white/70 text-sm">
             {isLoading ? 'Loading…' : `${filtered.length} ${filtered.length === 1 ? 'product' : 'products'}`}
-            {sortLabel && sort !== 'featured' && ` · Sorted by ${sortLabel}`}
           </p>
         </div>
       </div>
 
       <div className="container-xl py-6 lg:py-8">
         {/* ── Toolbar ── */}
-        <div className="flex items-center justify-between gap-4 mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6 py-4 border-b border-[#E5E5E5]">
           <div className="flex items-center gap-3">
             <MobileFilters
               filters={filters}
@@ -188,11 +184,14 @@ export function ShopClient() {
               resultCount={filtered.length}
               activeCount={activeCount}
             />
-            <span className="text-sm text-[#6B7280] hidden sm:block">
+            <span className="text-sm text-[#111111] font-semibold hidden sm:block">
               {filtered.length} {filtered.length === 1 ? 'product' : 'products'}
             </span>
           </div>
-          <SortSelect value={sort} onChange={(v) => { setSort(v); setPage(1) }} />
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-[#6B7280] hidden sm:inline">Sort by:</span>
+            <SortSelect value={sort} onChange={(v) => { setSort(v); setPage(1) }} />
+          </div>
         </div>
 
         <div className="flex gap-8 lg:gap-10 items-start">

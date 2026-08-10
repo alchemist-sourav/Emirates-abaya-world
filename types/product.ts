@@ -69,6 +69,10 @@ export interface SiteClaims {
 }
 
 export interface SiteConfig {
+  /** Thin promo/announcement bar text shown at the very top of the site */
+  announcement: string
+  /** Optional note shown under the product options (e.g. payment/length policy) */
+  productNote: string
   freeShippingAbove: number
   codFee: number
   taxRate: number

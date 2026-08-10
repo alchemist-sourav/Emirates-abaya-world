@@ -57,9 +57,9 @@ export function ProductGallery({ images, productName }: ProductGalleryProps) {
           sizes="(max-width: 768px) 100vw, 50vw"
         />
 
-        {/* Zoom indicator */}
+        {/* Zoom indicator — top-left */}
         {!isZoomed && (
-          <div className="absolute bottom-4 right-4 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-sm">
+          <div className="absolute top-3 left-3 p-2 bg-white/90 backdrop-blur-sm shadow-sm">
             <ZoomIn className="h-4 w-4 text-gray-600" aria-hidden="true" />
           </div>
         )}

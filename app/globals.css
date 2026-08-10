@@ -1,11 +1,12 @@
 /* ─────────────────────────────────────────────────────
    Tailwind CSS v4  —  Emirates Abaya World
    India-first E-Commerce + Premium Women's Fashion
+   REDESIGNED TO MATCH REFERENCE VIDEO STYLE
    ───────────────────────────────────────────────────── */
 @import "tailwindcss";
 
 /* Tell Tailwind v4 where to scan for class names */
-@source "../app/**/*.{js,ts,jsx,tsx,mdx}";
+@source "../app/**/*.{js,ts,jsx,ts,mdx}";
 @source "../components/**/*.{js,ts,jsx,tsx,mdx}";
 @source "../lib/**/*.{js,ts,jsx,tsx,mdx}";
 @source "../features/**/*.{js,ts,jsx,tsx,mdx}";
@@ -17,20 +18,21 @@
   --font-heading: var(--font-playfair), "Playfair Display", Georgia, serif;
   --font-body:    var(--font-inter), Inter, system-ui, sans-serif;
 
-  /* Shadows */
-  --shadow-luxury:    0 2px 20px rgba(0, 0, 0, 0.06);
-  --shadow-luxury-md: 0 4px 32px rgba(0, 0, 0, 0.10);
-  --shadow-luxury-lg: 0 8px 48px rgba(0, 0, 0, 0.14);
-  --shadow-card:      0 1px 8px rgba(0, 0, 0, 0.06);
-  --shadow-card-hover:0 4px 20px rgba(0, 0, 0, 0.12);
+  /* Brand Colors */
+  --color-black:   #111111;
+  --color-gold:    #C9A227;
+  --color-gold-light: #D4AF37;
+  --color-gold-dark:  #A67C00;
+  --color-cream:   #F5F0EA;
+  --color-white:   #FFFFFF;
+  --color-brand-gray:    #777777;
+  --color-brand-light-gray: #E5E5E5;
+  --color-brand-mid-gray:   #6B7280;
+  --color-brand-dark-gray:  #444444;
 
-  /* Custom animations */
-  --animate-shimmer:        shimmer 2s linear infinite;
-  --animate-slide-up:       slideUp 0.4s ease-out;
-  --animate-fade-in:        fadeIn 0.3s ease-out;
-  --animate-slide-in-right: slideInRight 0.3s ease-out;
-  --animate-slide-in-left:  slideInLeft 0.3s ease-out;
-  --animate-slide-in-up:    slideInUp 0.35s ease-out;
+  /* Shadows - Minimal, clean only */
+  --shadow-luxury:    0 2px 20px rgba(0, 0, 0, 0.06);
+  --shadow-card:      0 1px 8px rgba(0, 0, 0, 0.06);
 }
 
 /* ── Base styles ─────────────────────────────────────── */
@@ -40,9 +42,10 @@
     --c-gold:      #C9A227;
     --c-gold-l:    #D4AF37;
     --c-gold-d:    #A67C00;
-    --c-cream:     #F8F6F2;
+    --c-cream:     #F5F0EA;
     --c-white:     #FFFFFF;
     --c-muted:     #6B7280;
+    --c-gray:      #777777;
     --c-border:    #E5E5E5;
     --c-red:       #DC2626;
     --c-green:     #16A34A;
@@ -57,6 +60,9 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
   }
 
   body {
@@ -66,7 +72,14 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     line-height: 1.6;
+    width: 100%;
+    margin: 0;
+    padding: 0;
     overflow-x: hidden;
+  }
+
+  main {
+    width: 100%;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -108,26 +121,35 @@
   .font-heading { font-family: var(--font-heading); }
   .font-body    { font-family: var(--font-body); }
 
-  /* Layout container */
+  /* Layout container - clean, minimal */
   .container-xl {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
-  /* Sections */
-  .section    { @apply py-10 md:py-14 lg:py-16; }
-  .section-sm { @apply py-7 md:py-10 lg:py-12; }
-
-  /* Eyebrow label */
-  .eyebrow {
-    @apply text-[11px] font-semibold uppercase tracking-[0.35em] text-[#C9A227];
+  /* ── Consistent site-wide content width ──
+     Aligns header, hero text, homepage sections and footer.
+     ~40px side gutters, capped at 1440px. */
+  .site-container {
+    width: min(calc(100% - 80px), 1440px);
+    margin-inline: auto;
   }
 
-  /* Section heading */
-  .section-heading {
-    @apply font-heading text-xl sm:text-2xl lg:text-3xl font-bold text-[#111111];
+  @media (max-width: 1024px) {
+    .site-container {
+      width: calc(100% - 48px);
+    }
+  }
+  @media (max-width: 768px) {
+    .site-container {
+      width: calc(100% - 40px);
+    }
   }
 
-  /* ── Buttons ── */
+  /* Sections - minimal spacing */
+  .section    { @apply py-10 md:py-12 lg:py-16; }
+  .section-sm { @apply py-8 md:py-10 lg:py-12; }
+
+  /* ── Buttons - Clean rectangular style ── */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -140,7 +162,7 @@
   }
   .btn:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px #F8F6F2, 0 0 0 4px #C9A227;
+    box-shadow: 0 0 0 2px #F5F0EA, 0 0 0 4px #C9A227;
   }
   .btn:disabled {
     opacity: 0.5;
@@ -161,12 +183,13 @@
     transition: background-color 0.2s;
     cursor: pointer;
     border: none;
+    border-radius: 0;
   }
   .btn-primary:hover  { background-color: #1a1a1a; }
   .btn-primary:active { background-color: #000000; }
   .btn-primary:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px #F8F6F2, 0 0 0 4px #C9A227;
+    box-shadow: 0 0 0 2px #F5F0EA, 0 0 0 4px #C9A227;
   }
   .btn-primary:disabled { opacity: 0.5; pointer-events: none; }
 
@@ -184,11 +207,12 @@
     border: 1.5px solid #111111;
     transition: all 0.2s;
     cursor: pointer;
+    border-radius: 0;
   }
   .btn-secondary:hover { background-color: #111111; color: #ffffff; }
   .btn-secondary:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px #F8F6F2, 0 0 0 4px #C9A227;
+    box-shadow: 0 0 0 2px #F5F0EA, 0 0 0 4px #C9A227;
   }
   .btn-secondary:disabled { opacity: 0.5; pointer-events: none; }
 
@@ -206,12 +230,13 @@
     transition: background-color 0.2s;
     cursor: pointer;
     border: none;
+    border-radius: 0;
   }
   .btn-gold:hover  { background-color: #D4AF37; }
   .btn-gold:active { background-color: #A67C00; }
   .btn-gold:focus-visible {
     outline: none;
-    box-shadow: 0 0 0 2px #F8F6F2, 0 0 0 4px #111111;
+    box-shadow: 0 0 0 2px #F5F0EA, 0 0 0 4px #111111;
   }
   .btn-gold:disabled { opacity: 0.5; pointer-events: none; }
 
@@ -228,6 +253,7 @@
     transition: background-color 0.15s;
     cursor: pointer;
     border: none;
+    border-radius: 0;
   }
   .btn-ghost:hover { background-color: #f3f4f6; }
 
@@ -236,12 +262,12 @@
   .btn-sm { padding: 0.5rem 1rem; font-size: 0.8125rem; }
   .btn-xs { padding: 0.375rem 0.75rem; font-size: 0.75rem; }
 
-  /* ── Form inputs ── */
+  /* ── Form inputs - Clean minimal style ── */
   .form-input {
     @apply w-full px-3.5 border border-[#E5E5E5] bg-white text-[#111111] text-sm
            placeholder:text-gray-400 focus:outline-none focus:border-[#111111]
            transition-colors duration-150;
-    height: 2.75rem; /* 44px — accessible touch target */
+    height: 2.75rem; /* accessible touch target */
     border-radius: 0;
   }
 
@@ -265,7 +291,7 @@
     padding-right: 2.5rem;
   }
 
-  /* ── Badges ── */
+  /* ── Badges - Minimal style ── */
   .badge {
     display: inline-flex;
     align-items: center;
@@ -275,6 +301,7 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     line-height: 1.4;
+    border-radius: 0;
   }
 
   .badge-black {
@@ -288,6 +315,7 @@
     background-color: #111111;
     color: #ffffff;
     line-height: 1.4;
+    border-radius: 0;
   }
 
   .badge-gold {
@@ -301,6 +329,7 @@
     background-color: #C9A227;
     color: #111111;
     line-height: 1.4;
+    border-radius: 0;
   }
 
   .badge-red {
@@ -314,6 +343,7 @@
     background-color: #DC2626;
     color: #ffffff;
     line-height: 1.4;
+    border-radius: 0;
   }
 
   .badge-green {
@@ -327,6 +357,7 @@
     background-color: #16A34A;
     color: #ffffff;
     line-height: 1.4;
+    border-radius: 0;
   }
 
   /* ── Product price display ── */
@@ -393,78 +424,245 @@
     background: linear-gradient(to right, transparent, rgba(201,162,39,0.4), transparent);
   }
 
-  /* ── Cards ── */
+  /* ── Cards - Minimal, no decoration ── */
   .card          { background-color: #ffffff; border: 1px solid #E5E5E5; }
-  .card-elevated { background-color: #ffffff; box-shadow: 0 2px 16px rgba(0,0,0,0.08); }
+  .card-elevated { background-color: #ffffff; box-shadow: none; }
 
-  /* ── Bottom nav spacer for mobile ── */
-  .bottom-nav-spacer {
-    height: 64px;
-  }
-}
-
-/* ── Utility classes ─────────────────────────────────── */
-@layer utilities {
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
+  /* ── Size selector buttons - Clean rectangular style ── */
+  .size-option {
+    @apply flex-shrink-0 w-auto px-4 py-1.5 text-sm font-medium transition-all duration-200;
+    border-radius: 0;
+    border: 1px solid #E5E5E5;
+    background-color: #FFFFFF;
+    color: #444;
   }
 
-  .text-gold-gradient {
-    background: linear-gradient(135deg, #C9A227, #D4AF37);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .size-option.selected {
+    background-color: #111111;
+    color: #FFFFFF;
+    border-color: #111111;
   }
 
-  .pb-safe {
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+  .size-option:not(.selected):hover {
+    background-color: #F5F0EA;
+    border-color: #C9A227;
   }
 
-  .mb-safe {
-    margin-bottom: env(safe-area-inset-bottom, 0px);
+  /* ── Matching hijab selector - Clean rectangular style ── */
+  .hijab-option {
+    @apply flex-shrink-0 px-4 py-1.5 text-sm font-medium transition-all duration-200;
+    border-radius: 0;
+    border: 1px solid #E5E5E5;
+    background-color: #FFFFFF;
+    color: #444;
   }
 
-  /* touch-friendly tap target */
-  .tap-target {
-    min-height: 44px;
-    min-width: 44px;
+  .hijab-option.selected {
+    background-color: #111111;
+    color: #FFFFFF;
+    border-color: #111111;
+  }
+
+  .hijab-option:not(.selected):hover {
+    background-color: #F5F0EA;
+    border-color: #C9A227;
+  }
+
+  /* ── Stock status indicator ── */
+  .stock-in-stock {
+    @apply inline-flex items-center gap-1.5 text-sm;
+    color: #16A34A;
+  }
+  .stock-out-of-stock {
+    @apply inline-flex items-center gap-1.5 text-sm;
+    color: #DC2626;
+  }
+
+  /* ── Star rating display ── */
+  .rating-display {
+    @apply flex items-center gap-0.5 text-sm;
+  }
+
+  /* ── Accordion for product sections ── */
+  .accordion-header {
+    @apply flex items-center justify-between w-full px-4 py-3 text-left text-sm font-medium text-[#111111] hover:text-[#C9A227] transition-colors;
+    border: none;
+    background: transparent;
+  }
+
+  .accordion-content {
+    @apply px-4 pb-3 text-sm text-[#444] border-t border-[#E5E5E5];
+  }
+
+  /* ── Length dropdown ── */
+  .length-select {
+    @apply w-full px-3 py-2 text-sm border border-[#E5E5E5] bg-white rounded-none text-[#111111];
+    appearance: none;
+  }
+
+  /* ── Product notes note ── */
+  .product-note {
+    @apply text-xs text-[#444] mt-2 pt-2 border-t border-[#E5E5E5];
+  }
+
+  /* ── Sticky bottom bar (mobile) ── */
+  .sticky-bottom {
+    @apply fixed bottom-0 left-0 right-0 bg-white border-t border-[#E5E5E5] p-3;
+    background-color: #FFFFFF;
+    backdrop-filter: blur(8px);
+  }
+
+  /* ── Modal backdrop ── */
+  .modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-content {
+    background-color: #FFFFFF;
+    border-radius: 0;
+    border: 1px solid #E5E5E5;
+  }
+
+  /* ── Hero section - full viewport width ── */
+  .hero {
+    position: relative;
+    width: 100%;
+    max-width: none;
+    min-height: 600px;
+    height: min(70vh, 720px);
+    overflow: hidden;
+    background-color: #F7F4F1;
+  }
+
+  /* Subtle readability overlay (keep image bright) */
+  .hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(
+      90deg,
+      rgb(0 0 0 / 0.38),
+      rgb(0 0 0 / 0.12) 50%,
+      transparent
+    );
+    pointer-events: none;
+  }
+
+  .hero-image {
+    position: absolute;
+    inset: 0;
+  }
+  .hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Text bounded to the same width as .site-container, vertically centered */
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    width: min(calc(100% - 80px), 1440px);
+    margin-inline: auto;
     display: flex;
     align-items: center;
-    justify-content: center;
   }
-}
 
-/* ── Keyframes ───────────────────────────────────────── */
-@keyframes shimmer {
-  0%   { background-position: -200% center; }
-  100% { background-position:  200% center; }
-}
+  .hero-content {
+    max-width: 560px;
+    color: #ffffff;
+  }
 
-@keyframes slideUp {
-  0%   { opacity: 0; transform: translateY(16px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
+  .hero-content .eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #C9A227;
+    margin-bottom: 1rem;
+  }
 
-@keyframes fadeIn {
-  0%   { opacity: 0; }
-  100% { opacity: 1; }
-}
+  .hero-content h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    font-weight: 600;
+    line-height: 1.0;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+    margin-bottom: 1.1rem;
+  }
 
-@keyframes slideInRight {
-  0%   { transform: translateX(100%); }
-  100% { transform: translateX(0); }
-}
+  .hero-content p {
+    font-size: 1rem;
+    color: rgb(255 255 255 / 0.92);
+    max-width: 440px;
+    margin-bottom: 1.75rem;
+  }
 
-@keyframes slideInLeft {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(0); }
-}
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 52px;
+    padding: 0 32px;
+    background-color: #ffffff;
+    color: #111111;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  .hero-cta:hover {
+    background-color: #C9A227;
+    color: #111111;
+  }
 
-@keyframes slideInUp {
-  0%   { opacity: 0; transform: translateY(24px); }
-  100% { opacity: 1; transform: translateY(0); }
+  @media (max-width: 1024px) {
+    .hero {
+      height: 520px;
+    }
+    .hero-inner {
+      width: calc(100% - 48px);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      min-height: 0;
+      height: 520px;
+    }
+    .hero-inner {
+      width: calc(100% - 40px);
+    }
+    .hero-content h1 {
+      font-size: clamp(2.2rem, 10vw, 3.5rem);
+    }
+  }
+
+
+  /* ── Social icons ── */
+  .social-icon {
+    @apply w-8 h-8 text-[#111111] hover:text-[#C9A227] transition-colors;
+  }
+
+  /* ── Newsletter form ── */
+  .newsletter-form {
+    @apply flex flex-col sm:flex-row gap-2;
+  }
+
+  .newsletter-input {
+    @apply flex-1 px-4 py-2 border border-[#E5E5E5] rounded-none text-sm;
+  }
+
+  .newsletter-button {
+    @apply px-4 py-2 bg-[#111111] text-white text-sm font-medium hover:bg-[#1a1a1a] transition-colors rounded-none;
+  }
+
+  /* ── WhatsApp floating button ── */
+  .whatsapp-button {
+    @apply fixed bottom-6 right-6 z-50 w-12 h-12 flex items-center justify-center bg-[#25D366] text-white rounded-full shadow-lg hover:scale-105 transition-transform;
+  }
 }
