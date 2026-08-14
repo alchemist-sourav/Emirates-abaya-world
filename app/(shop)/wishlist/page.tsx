@@ -7,7 +7,7 @@ import { Heart, ShoppingBag, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useWishlistStore } from '@/store/wishlist'
 import { useCartStore } from '@/store/cart'
-import { formatINR } from '@/lib/utils'
+import { formatPrice } from '@/lib/utils'
 
 export default function WishlistPage() {
   const { items, removeItem, clearWishlist } = useWishlistStore()
@@ -101,7 +101,7 @@ export default function WishlistPage() {
                       {item.name}
                     </h3>
                   </Link>
-                  <p className="font-bold text-[#111111] mb-2">{formatINR(item.price)}</p>
+                  <p className="font-bold text-[#111111] mb-2">{formatPrice(item.price)}</p>
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleMoveToCart(item)}

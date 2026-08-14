@@ -7,7 +7,8 @@ import { X, Star, Heart } from 'lucide-react'
 import { useQuickViewStore } from '@/store/quickview'
 import { useCartStore } from '@/store/cart'
 import { useWishlistStore } from '@/store/wishlist'
-import { formatINR, discountPercent } from '@/lib/utils'
+import { SITE_CONFIG } from '@/lib/data/products'
+import { formatPrice, discountPercent } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import toast from 'react-hot-toast'
 import type { Product } from '@/types/product'
@@ -128,10 +129,10 @@ function QuickViewContent({ product, onClose }: { product: Product; onClose: () 
             </div>
 
             <div className="flex items-baseline gap-2">
-              <span className="text-xl font-bold text-[#111111]">{formatINR(product.price)}</span>
+              <span className="text-xl font-bold text-[#111111]">{formatPrice(product.price)}</span>
               {product.originalPrice && product.originalPrice > product.price && (
                 <>
-                  <span className="text-sm text-gray-400 line-through">MRP {formatINR(product.originalPrice)}</span>
+                  <span className="text-sm text-gray-400 line-through">{SITE_CONFIG.listPriceLabel}{formatPrice(product.originalPrice)}</span>
                   <span className="text-sm font-semibold text-green-600">{discount}% off</span>
                 </>
               )}

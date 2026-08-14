@@ -1,6 +1,7 @@
-import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
-import { SITE_CONFIG } from '@/lib/data/products'
+"use client"
+
+import { create } from "zustand"
+import { persist, createJSONStorage } from "zustand/middleware"
 
 export interface CartItem {
   id: string
@@ -9,26 +10,27 @@ export interface CartItem {
   price: number
   currency: string
   image: string
+  slug: string
+  quantity: number
   size?: string
   length?: string
   hijab?: string
   hijabPrice?: number
-  quantity: number
-  slug: string
 }
 
-export interface CartState {
+export type CartItemInput = Omit<CartItem, "quantity"> & { quantity?: number }
+
+interface CartState {
   items: CartItem[]
   isDrawerOpen: boolean
-  addItem: (item: CartItem) => void
+  addItem: (item: CartItemInput) => void
   removeItem: (id: string) => void
   updateQuantity: (id: string, quantity: number) => void
   clearCart: () => void
   openDrawer: () => void
   closeDrawer: () => void
-  getItemCount: () => number
   getSubtotal: () => number
-  getTotal: () => number
+  getItemCount: () => number
 }
 
 export const useCartStore = create<CartState>()(
@@ -36,71 +38,70 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       items: [],
       isDrawerOpen: false,
-
       addItem: (item) => {
-        const items = get().items
-        const existingItem = items.find(
-          (i) =>
-            i.productId === item.productId &&
-            i.size === item.size &&
-            i.length === item.length &&
-            i.hijab === item.hijab
-        )
-
+        const quantity = Math.max(1, item.quantity ?? 1)
+        const existingItem = get().items.find((i) => i.id === item.id)
         if (existingItem) {
           set({
-            items: items.map((i) =>
-              i.id === existingItem.id
-                ? { ...i, quantity: i.quantity + item.quantity }
-                : i
+            items: get().items.map((i) =>
+              i.id === item.id ? { ...i, quantity: i.quantity + quantity } : i
             ),
           })
-        } else {
-          set({ items: [...items, item] })
-        }
-      },
-
-      removeItem: (id) => {
-        set({ items: get().items.filter((i) => i.id !== id) })
-      },
-
-      updateQuantity: (id, quantity) => {
-        if (quantity <= 0) {
-          set({ items: get().items.filter((i) => i.id !== id) })
         } else {
           set({
-            items: get().items.map((i) =>
-              i.id === id ? { ...i, quantity } : i
-            ),
+            items: [
+              ...get().items,
+              {
+                id: item.id,
+                productId: item.productId,
+                name: item.name,
+                price: item.price,
+                currency: item.currency,
+                image: item.image,
+                slug: item.slug,
+                quantity,
+                size: item.size,
+                length: item.length,
+                hijab: item.hijab,
+                hijabPrice: item.hijabPrice,
+              },
+            ],
           })
         }
       },
-
+      removeItem: (id: string) =>
+        set({ items: get().items.filter((i) => i.id !== id) }),
+      updateQuantity: (id: string, quantity: number) => {
+        if (quantity <= 0) {
+          set({ items: get().items.filter((i) => i.id !== id) })
+          return
+        }
+        set({
+          items: get().items.map((i) =>
+            i.id === id ? { ...i, quantity } : i
+          ),
+        })
+      },
       clearCart: () => set({ items: [] }),
-
       openDrawer: () => set({ isDrawerOpen: true }),
       closeDrawer: () => set({ isDrawerOpen: false }),
-
-      getItemCount: () =>
-        get().items.reduce((total, item) => total + item.quantity, 0),
-
       getSubtotal: () =>
         get().items.reduce(
-          (total, item) =>
-            total + (item.price + (item.hijabPrice ?? 0)) * item.quantity,
+          (sum, item) => sum + (item.price + (item.hijabPrice ?? 0)) * item.quantity,
           0
         ),
-
-      getTotal: () => {
-        const subtotal = get().getSubtotal()
-        const shipping = subtotal >= SITE_CONFIG.freeShippingAbove ? 0 : SITE_CONFIG.baseShippingFee
-        const tax = subtotal * SITE_CONFIG.taxRate
-        return subtotal + shipping + tax
-      },
+      getItemCount: () =>
+        get().items.reduce((sum, item) => sum + item.quantity, 0),
     }),
     {
-      name: 'cart-storage',
-      storage: createJSONStorage(() => localStorage),
+      name: "emirates-cart-storage",
+      version: 2,
+      storage: createJSONStorage(() => sessionStorage),
+      migrate: (persistedState) => ({
+        ...(persistedState as Partial<CartState>),
+        items: [],
+        isDrawerOpen: false,
+      }),
     }
   )
 )

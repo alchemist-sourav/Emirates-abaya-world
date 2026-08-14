@@ -68,6 +68,14 @@ export interface SiteClaims {
   freeShipping: boolean
 }
 
+export interface ShippingZone {
+  name: string
+  transit: string
+  fee: number
+  /** Order value above which this zone ships free (0 = never free) */
+  freeAbove?: number
+}
+
 export interface SiteConfig {
   /** Thin promo/announcement bar text shown at the very top of the site */
   announcement: string
@@ -79,15 +87,37 @@ export interface SiteConfig {
   baseShippingFee: number
   currency: string
   currencySymbol: string
+  /** BCP-47 locale used for number/date formatting, e.g. en-AE, en-IN */
+  locale: string
+  /** Number of decimals to show for prices */
+  priceDecimals: number
   whatsappNumber: string
   email: string
   phone: string
   address: string
+  /** Flagship atelier / showroom line shown on contact & about pages */
+  showroom: string
+  supportEmail: string
+  instagram: string
+  tagline: string
+  /** Short region label, e.g. "Premium Modest Fashion · Dubai" */
+  regionLabel: string
+  /** Label for the postcode field, e.g. "PIN Code" or "Emirate / City" */
+  pinLabel: string
+  /** Regex (as string) used to validate phone numbers for checkout */
+  phonePattern: string
+  /** List of states / emirates shown in delivery address forms */
+  states: string[]
+  /** Prefix shown before strikethrough list prices, e.g. "MRP " or "" */
+  listPriceLabel: string
+  /** Footer copyright line */
+  copyright: string
   claims: SiteClaims
   delivery: {
     minPinPrefix: number
     maxPinPrefix: number
   }
+  shippingZones: ShippingZone[]
 }
 
 export interface SizeOption {

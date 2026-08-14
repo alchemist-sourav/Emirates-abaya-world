@@ -8,7 +8,7 @@ import toast from 'react-hot-toast'
 import type { CartItem as CartItemType } from '@/store/cart'
 import { useCartStore } from '@/store/cart'
 import { useWishlistStore } from '@/store/wishlist'
-import { formatINR } from '@/lib/utils'
+import { formatPrice } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 
 interface CartItemProps {
@@ -119,11 +119,11 @@ export function CartItemRow({ item, compact = false }: CartItemProps) {
           {/* Price */}
           <div className="text-right">
             <p className="font-semibold text-[#111111] text-sm">
-              {formatINR(itemTotal)}
+              {formatPrice(itemTotal)}
             </p>
             {item.quantity > 1 && (
               <p className="text-xs text-gray-400">
-                {formatINR(item.price + (item.hijabPrice ?? 0))} each
+                {formatPrice(item.price + (item.hijabPrice ?? 0))} each
               </p>
             )}
           </div>

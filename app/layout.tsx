@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${playfair.variable} ${inter.variable} font-body antialiased bg-[#F8F6F2] text-[#111111] min-h-screen`}
+        className={`${playfair.variable} ${inter.variable} font-sans antialiased bg-[#F8F6F2] text-[#111111] min-h-screen`}
       >
         {children}
         {/* ToasterProvider is a Client Component — safe to render from Server layout */}

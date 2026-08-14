@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
+import { ChevronRight } from 'lucide-react'
 import { ProductGrid } from '@/components/products/ProductGrid'
 import { ProductGridSkeleton } from '@/components/ui/Skeleton'
 import { FilterSidebar, type FilterState } from '@/components/shop/FilterSidebar'
@@ -159,11 +161,19 @@ export function ShopClient() {
     <div className="min-h-screen bg-[#F8F6F2]">
       {/* ── Page header ── */}
       <div className="bg-[#111111] text-white">
-        <div className="container-xl py-12 lg:py-14 text-center">
-          <h1 className="font-heading text-3xl lg:text-4xl font-bold mb-2">
+        <div className="container-xl pt-10 lg:pt-14 pb-12 lg:pb-16 text-center">
+          <nav aria-label="Breadcrumb" className="flex items-center justify-center gap-1.5 text-[11px] text-gray-400 uppercase tracking-wider mb-4">
+            <Link href="/" className="hover:text-[#C9A227] transition-colors">Home</Link>
+            <ChevronRight className="h-3 w-3" aria-hidden="true" />
+            <span className="text-[#C9A227]" aria-current="page">Shop</span>
+          </nav>
+          <span className="font-heading italic text-[12px] tracking-[0.35em] uppercase text-[#C9A227] block mb-2">
+            The Emirates Collection
+          </span>
+          <h1 className="font-heading text-3xl lg:text-4xl font-bold">
             {title}
           </h1>
-          <p className="text-white/70 text-sm">
+          <p className="text-white/70 text-sm mt-2">
             {isLoading ? 'Loading…' : `${filtered.length} ${filtered.length === 1 ? 'product' : 'products'}`}
           </p>
         </div>

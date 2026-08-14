@@ -2,7 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import { Tag } from 'lucide-react'
 import { SITE_CONFIG } from '@/lib/data/products'
-import { formatINR } from '@/lib/utils'
+import { formatPrice } from '@/lib/utils'
 
 interface CartSummaryProps {
   subtotal: number
@@ -24,33 +24,33 @@ export function CartSummary({ subtotal, showCheckoutButton = true }: CartSummary
       <dl className="space-y-3 mb-5">
         <div className="flex items-center justify-between text-sm">
           <dt className="text-gray-600">Price ({subtotal > 0 ? `${Math.max(1, Math.round(subtotal / 3449))} item` : '0 items'})</dt>
-          <dd className="font-medium text-[#111111]">{formatINR(subtotal)}</dd>
+          <dd className="font-medium text-[#111111]">{formatPrice(subtotal)}</dd>
         </div>
         <div className="flex items-center justify-between text-sm">
           <dt className="text-gray-600">Discount</dt>
           <dd className={discount > 0 ? 'text-green-600 font-medium' : 'font-medium text-[#111111]'}>
-            {discount > 0 ? `− ${formatINR(discount)}` : formatINR(0)}
+            {discount > 0 ? `− ${formatPrice(discount)}` : formatPrice(0)}
           </dd>
         </div>
         <div className="flex items-center justify-between text-sm">
           <dt className="text-gray-600">Delivery Charges</dt>
           <dd className={shipping === 0 ? 'text-green-600 font-medium' : 'font-medium text-[#111111]'}>
-            {shipping === 0 ? 'FREE' : formatINR(shipping)}
+            {shipping === 0 ? 'FREE' : formatPrice(shipping)}
           </dd>
         </div>
         <div className="flex items-center justify-between text-sm">
           <dt className="text-gray-600">Tax (incl.)</dt>
-          <dd className="font-medium text-[#111111]">{formatINR(tax)}</dd>
+          <dd className="font-medium text-[#111111]">{formatPrice(tax)}</dd>
         </div>
         <div className="pt-3 border-t border-gray-200 flex items-center justify-between">
           <dt className="font-semibold text-[#111111]">Total Amount</dt>
-          <dd className="text-xl font-bold text-[#111111]">{formatINR(total)}</dd>
+          <dd className="text-xl font-bold text-[#111111]">{formatPrice(total)}</dd>
         </div>
       </dl>
 
       {shipping > 0 && (
         <div className="text-xs text-gray-500 bg-[#F8F6F2] p-2.5 border border-gray-200 mb-5">
-          Add <span className="font-semibold text-[#111111]">{formatINR(SITE_CONFIG.freeShippingAbove - subtotal)}</span> more to get <span className="font-semibold text-green-600">FREE delivery</span>!
+          Add <span className="font-semibold text-[#111111]">{formatPrice(SITE_CONFIG.freeShippingAbove - subtotal)}</span> more to get <span className="font-semibold text-green-600">FREE delivery</span>!
         </div>
       )}
 
@@ -79,7 +79,7 @@ export function CartSummary({ subtotal, showCheckoutButton = true }: CartSummary
       )}
 
       <p className="text-xs text-gray-500 text-center mt-3">
-        You will save <span className="font-semibold text-green-600">{formatINR(shipping)}</span> on delivery today
+        You will save <span className="font-semibold text-green-600">{formatPrice(shipping)}</span> on delivery today
       </p>
     </div>
   )

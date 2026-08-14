@@ -3,7 +3,7 @@
 import React, { useState, useRef } from 'react'
 import Link from 'next/link'
 import { MapPin, Plus, Trash2, Check } from 'lucide-react'
-import { INDIAN_STATES } from '@/lib/data/india'
+import { getSiteConfig } from '@/lib/services/products'
 
 type Address = {
   id: number
@@ -18,6 +18,8 @@ type Address = {
 }
 
 export default function AddressesPage() {
+  const config = getSiteConfig()
+  const isIndia = config.currency === 'INR'
   const [addresses, setAddresses] = useState<Address[]>([])
   const [form, setForm] = useState({ fullName: '', mobile: '', house: '', area: '', city: '', state: '', pinCode: '' })
   const [showForm, setShowForm] = useState(false)
@@ -109,7 +111,7 @@ export default function AddressesPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#111111] mb-1.5">Mobile</label>
-                <input required type="tel" maxLength={10} value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value.replace(/\D/g, '') })}
+                <input required type="tel" maxLength={isIndia ? 10 : 20} value={form.mobile} onChange={(e) => setForm({ ...form, mobile: isIndia ? e.target.value.replace(/\D/g, '') : e.target.value })}
                   className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-[#C9A227] focus:outline-none focus:ring-1 focus:ring-[#C9A227]" />
               </div>
             </div>
@@ -130,16 +132,16 @@ export default function AddressesPage() {
                   className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-[#C9A227] focus:outline-none focus:ring-1 focus:ring-[#C9A227]" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#111111] mb-1.5">State</label>
+                <label className="block text-sm font-medium text-[#111111] mb-1.5">{isIndia ? 'State' : 'Emirate'}</label>
                 <select required value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })}
                   className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-[#C9A227] focus:outline-none focus:ring-1 focus:ring-[#C9A227] bg-white">
-                  <option value="">Select state</option>
-                  {INDIAN_STATES.map((s) => <option key={s}>{s}</option>)}
+                  <option value="">{isIndia ? 'Select state' : 'Select emirate'}</option>
+                  {config.states.map((s) => <option key={s}>{s}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#111111] mb-1.5">PIN Code</label>
-                <input required type="tel" maxLength={6} value={form.pinCode} onChange={(e) => setForm({ ...form, pinCode: e.target.value.replace(/\D/g, '') })}
+                <label className="block text-sm font-medium text-[#111111] mb-1.5">{config.pinLabel}</label>
+                <input required type={isIndia ? 'tel' : 'text'} maxLength={isIndia ? 6 : 30} value={form.pinCode} onChange={(e) => setForm({ ...form, pinCode: isIndia ? e.target.value.replace(/\D/g, '') : e.target.value })}
                   className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-[#C9A227] focus:outline-none focus:ring-1 focus:ring-[#C9A227]" />
               </div>
             </div>

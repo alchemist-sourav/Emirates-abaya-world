@@ -2,7 +2,8 @@
 
 import React, { useState, useMemo, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { Heart, ShieldCheck, RotateCcw, Truck, BadgeCheck, ChevronDown } from 'lucide-react'
+import Link from 'next/link'
+import { Heart, ShieldCheck, RotateCcw, Truck, BadgeCheck, ChevronDown, ChevronRight } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { ProductGallery } from '@/components/products/ProductGallery'
 import { ProductOptions } from '@/components/products/ProductOptions'
@@ -12,7 +13,7 @@ import { useCartStore } from '@/store/cart'
 import { useWishlistStore } from '@/store/wishlist'
 import { useRecentlyViewedStore } from '@/store/recently-viewed'
 import { getSiteConfig } from '@/lib/services/products'
-import { formatINR, discountPercent } from '@/lib/utils'
+import { formatPrice, discountPercent } from '@/lib/utils'
 import type { Product } from '@/types/product'
 import { cn } from '@/lib/utils'
 
@@ -139,6 +140,16 @@ export function ProductDetailClient({ product }: Props) {
   const outOfStock = product.stock === 0
   const lowStock = product.stock > 0 && product.stock <= 5
 
+  const categoryLabel = (category: string): string => {
+    const map: Record<string, string> = {
+      abayas: 'Abayas',
+      hijabs: 'Hijabs',
+      'prayer-abayas': 'Prayer Abayas',
+      accessories: 'Accessories',
+    }
+    return map[category] ?? 'Shop'
+  }
+
   const trustItems: { icon: typeof ShieldCheck; label: string }[] = []
   if (config.claims.securePayments) trustItems.push({ icon: ShieldCheck, label: 'Secure Payment' })
   if (config.claims.freeShipping) trustItems.push({ icon: Truck, label: 'Free Shipping' })
@@ -155,6 +166,19 @@ export function ProductDetailClient({ product }: Props) {
 
       {/* Right: product information (45%) */}
       <div className="flex flex-col gap-5">
+
+        {/* Breadcrumb */}
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[11px] text-gray-400 uppercase tracking-wider">
+          <Link href="/" className="hover:text-[#C9A227] transition-colors">Home</Link>
+          <ChevronRight className="h-3 w-3" aria-hidden="true" />
+          <Link href="/shop" className="hover:text-[#C9A227] transition-colors">Shop</Link>
+          <ChevronRight className="h-3 w-3" aria-hidden="true" />
+          <Link href={`/shop?category=${product.category}`} className="hover:text-[#C9A227] transition-colors">
+            {categoryLabel(product.category)}
+          </Link>
+          <ChevronRight className="h-3 w-3" aria-hidden="true" />
+          <span className="text-[#111111] font-medium" aria-current="page">{product.name}</span>
+        </nav>
 
         {/* Title — large but restrained */}
         <h1 className="font-heading text-[26px] sm:text-3xl font-medium text-[#111111] leading-tight">
@@ -175,18 +199,18 @@ export function ProductDetailClient({ product }: Props) {
         {/* Price — gold */}
         <div className="flex items-baseline gap-3">
           <span className="text-[30px] font-bold text-[#C9A227] leading-none">
-            {formatINR(product.price + hijabPrice)}
+            {formatPrice(product.price + hijabPrice)}
           </span>
           {product.originalPrice && product.originalPrice > product.price && (
             <>
-              <span className="text-base text-gray-400 line-through">{formatINR(product.originalPrice)}</span>
-              <span className="text-sm font-semibold text-[#16A34A]">
-                ({discount}% OFF)
+              <span className="text-base text-gray-400 line-through">{formatPrice(product.originalPrice)}</span>
+              <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-[#D4956A] text-white text-[11px] font-bold tracking-wide">
+                {discount}% OFF
               </span>
             </>
           )}
         </div>
-        <p className="text-[11px] text-gray-400 -mt-2">*Inclusive of All Taxes</p>
+        <p className="text-[11px] text-gray-400 -mt-2">*Inclusive of VAT</p>
 
         {/* Compact reviews */}
         {product.rating > 0 && (
@@ -210,7 +234,7 @@ export function ProductDetailClient({ product }: Props) {
 
         <div className="border-t border-[#F0EEEC]" />
 
-        <PinCodeCheck />
+        {config.currency === 'INR' && <PinCodeCheck />}
 
         {/* Options */}
         <ProductOptions
@@ -264,7 +288,7 @@ export function ProductDetailClient({ product }: Props) {
         {(selectedSize || selectedLength) && (
           <div className="flex items-center justify-between py-3 border-y border-[#E5E5E5]">
             <span className="text-sm text-gray-600">Total for {quantity} {quantity === 1 ? 'item' : 'items'}</span>
-            <span className="text-xl font-bold text-[#111111]">{formatINR(totalPrice)}</span>
+            <span className="text-xl font-bold text-[#111111]">{formatPrice(totalPrice)}</span>
           </div>
         )}
 
@@ -275,8 +299,8 @@ export function ProductDetailClient({ product }: Props) {
             onClick={handleAddToCart}
             disabled={outOfStock}
             className={cn(
-              'w-full py-3.5 font-semibold text-sm tracking-wide uppercase transition-colors',
-              outOfStock ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#111111] text-white hover:bg-[#000000]'
+              'w-full py-3.5 font-semibold text-sm tracking-wide uppercase rounded-full transition-colors',
+              outOfStock ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#D4956A] text-white hover:bg-[#C98557]'
             )}
           >
             {outOfStock ? 'Out of Stock' : 'Add to Cart'}
@@ -287,7 +311,7 @@ export function ProductDetailClient({ product }: Props) {
               type="button"
               onClick={handleBuyNow}
               disabled={outOfStock}
-              className="py-3.5 bg-[#C9A227] text-[#111111] font-semibold text-sm tracking-wide hover:bg-[#D4AF37] transition-colors disabled:opacity-40"
+              className="py-3.5 bg-[#111111] text-white font-semibold text-sm tracking-wide rounded-full hover:bg-[#C9A227] hover:text-[#111111] transition-colors disabled:opacity-40"
             >
               Buy Now
             </button>
@@ -295,7 +319,7 @@ export function ProductDetailClient({ product }: Props) {
               type="button"
               onClick={handleWhatsApp}
               disabled={outOfStock}
-              className="py-3.5 border border-[#25D366] text-[#128C4A] font-semibold text-sm hover:bg-[#eefaf2] transition-colors disabled:opacity-40"
+              className="py-3.5 border border-[#25D366] text-[#128C4A] font-semibold text-sm rounded-full hover:bg-[#eefaf2] transition-colors disabled:opacity-40"
             >
               WhatsApp Order
             </button>
@@ -305,7 +329,7 @@ export function ProductDetailClient({ product }: Props) {
             type="button"
             onClick={handleWishlistToggle}
             className={cn(
-              'py-3 flex items-center justify-center gap-2 border font-medium text-sm transition-all',
+              'py-3 flex items-center justify-center gap-2 border font-medium text-sm rounded-full transition-all',
               isWishlisted ? 'bg-[#111111] text-white border-[#111111]' : 'border-gray-300 text-[#111111] hover:border-[#111111]'
             )}
             aria-pressed={isWishlisted}
@@ -340,7 +364,7 @@ export function ProductDetailClient({ product }: Props) {
             Dry clean recommended. Steam iron on low heat inside out. Store folded in a breathable garment bag to preserve the fabric and embellishments.
           </Accordion>
           <Accordion title="Shipping">
-            Dispatched within 24–48 hours. Free shipping above {formatINR(config.freeShippingAbove)}, otherwise a flat shipping fee applies. COD available across India.
+            Dispatched within 24–48 hours. {config.claims.freeShipping ? `Free shipping above ${formatPrice(config.freeShippingAbove)}, ` : ''}otherwise a flat shipping fee applies. {config.claims.codAvailable ? 'Cash on Delivery available.' : ''}
           </Accordion>
           <Accordion title="Returns">
             Easy 14-day return &amp; exchange. Items must be unused, with tags attached. See our Return &amp; Exchange Policy for details.
@@ -356,8 +380,8 @@ export function ProductDetailClient({ product }: Props) {
     <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[#E5E5E5] px-3 py-2.5 shadow-[0_-2px_12px_rgba(0,0,0,0.06)]">
       <div className="flex items-center gap-3">
         <div className="flex-1 min-w-0">
-          <p className="text-lg font-bold text-[#C9A227] leading-none">{formatINR(product.price + hijabPrice)}</p>
-          <p className="text-[11px] text-gray-500 leading-tight mt-0.5">Taxes included</p>
+          <p className="text-lg font-bold text-[#C9A227] leading-none">{formatPrice(product.price + hijabPrice)}</p>
+          <p className="text-[11px] text-gray-500 leading-tight mt-0.5">VAT included</p>
         </div>
         <button
           type="button"

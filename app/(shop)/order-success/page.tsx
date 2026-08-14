@@ -5,14 +5,18 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { CheckCircle2, Package, MessageCircle, ShoppingBag, ArrowRight } from 'lucide-react'
 import { SITE_CONFIG } from '@/lib/data/products'
-import { formatINR } from '@/lib/utils'
+import { formatPrice } from '@/lib/utils'
 
 function OrderSuccessContent() {
   const searchParams = useSearchParams()
   const orderNumber = searchParams.get('order') ?? ''
   const config = SITE_CONFIG
+  const isIndia = config.currency === 'INR'
+  const brand = isIndia ? 'Emirates Abaya World' : 'EMIRATES'
+  const deliveryEstimate = isIndia ? '4–7 business days' : '1–3 business days (UAE)'
+  const dispatchWindow = isIndia ? '24–48 hours' : '24 hours'
   const whatsappLink = `https://wa.me/${config.whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(
-    `Hi Emirates Abaya World! I just placed an order (${orderNumber}) and wanted to confirm the details.`
+    `Hi ${brand}! I just placed an order (${orderNumber}) and wanted to confirm the details.`
   )}`
 
   return (
@@ -41,7 +45,7 @@ function OrderSuccessContent() {
               <h2 className="font-semibold text-[#111111]">What happens next?</h2>
               <p className="text-sm text-gray-600 mt-1">
                 A confirmation email has been sent to your email address. Your order will be shipped
-                within 24–48 hours and you can track it anytime from your account.
+                within {dispatchWindow} and you can track it anytime from your account.
               </p>
             </div>
           </div>
@@ -54,11 +58,11 @@ function OrderSuccessContent() {
             )}
             <p className="flex items-center justify-between">
               <span>Estimated delivery</span>
-              <span className="font-medium text-[#111111]">4–7 business days</span>
+              <span className="font-medium text-[#111111]">{deliveryEstimate}</span>
             </p>
             <p className="flex items-center justify-between">
               <span>Free shipping over</span>
-              <span className="font-medium text-[#111111]">{formatINR(config.freeShippingAbove)}</span>
+              <span className="font-medium text-[#111111]">{formatPrice(config.freeShippingAbove)}</span>
             </p>
           </div>
         </div>

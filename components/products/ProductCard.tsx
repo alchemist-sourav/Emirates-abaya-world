@@ -7,8 +7,9 @@ import { Heart, Star, Eye } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { useWishlistStore } from '@/store/wishlist'
 import { useQuickViewStore } from '@/store/quickview'
+import { SITE_CONFIG } from '@/lib/data/products'
 import type { Product } from '@/types/product'
-import { formatINR, discountPercent } from '@/lib/utils'
+import { formatPrice, discountPercent } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 
 interface ProductCardProps {
@@ -178,10 +179,10 @@ export default function ProductCard({ product, className, priority = false }: Pr
 
           {/* Price */}
           <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-            <span className="font-bold text-[15px] text-[#111111] leading-none">{formatINR(product.price)}</span>
+            <span className="font-bold text-[15px] text-[#111111] leading-none">{formatPrice(product.price)}</span>
             {product.originalPrice && product.originalPrice > product.price && (
               <>
-                <span className="text-[12px] text-gray-400 line-through leading-none">MRP {formatINR(product.originalPrice)}</span>
+                <span className="text-[12px] text-gray-400 line-through leading-none">{SITE_CONFIG.listPriceLabel}{formatPrice(product.originalPrice)}</span>
                 {discount > 0 && (
                   <span className="text-[11px] font-semibold text-[#16A34A] leading-none">{discount}% OFF</span>
                 )}

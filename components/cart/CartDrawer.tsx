@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { X, ShoppingBag, CheckCircle2 } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
 import { SITE_CONFIG } from '@/lib/data/products'
-import { formatINR } from '@/lib/utils'
+import { formatPrice } from '@/lib/utils'
 import { CartItemRow } from './CartItem'
 
 export function CartDrawer() {
@@ -79,7 +79,7 @@ export function CartDrawer() {
         {items.length > 0 && shipping > 0 && (
           <div className="px-5 py-3 border-t border-gray-100 bg-[#F8F6F2]">
             <p className="text-[11px] text-[#6B7280] mb-1.5">
-              Add <span className="font-semibold text-[#111111]">{formatINR(SITE_CONFIG.freeShippingAbove - subtotal)}</span> more to get <span className="font-semibold text-green-600">FREE shipping</span>
+              Add <span className="font-semibold text-[#111111]">{formatPrice(SITE_CONFIG.freeShippingAbove - subtotal)}</span> more to get <span className="font-semibold text-green-600">FREE shipping</span>
             </p>
             <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
               <div
@@ -96,21 +96,21 @@ export function CartDrawer() {
             <dl className="space-y-1.5 mb-4">
               <div className="flex justify-between text-sm">
                 <dt className="text-gray-500">Subtotal</dt>
-                <dd className="font-medium">{formatINR(subtotal)}</dd>
+                <dd className="font-medium">{formatPrice(subtotal)}</dd>
               </div>
               <div className="flex justify-between text-sm">
                 <dt className="text-gray-500">Shipping</dt>
                 <dd className={shipping === 0 ? 'text-green-600 font-medium' : 'font-medium'}>
-                  {shipping === 0 ? 'FREE' : formatINR(shipping)}
+                  {shipping === 0 ? 'FREE' : formatPrice(shipping)}
                 </dd>
               </div>
               <div className="flex justify-between text-sm">
                 <dt className="text-gray-500">Tax (included)</dt>
-                <dd className="font-medium">{formatINR(tax)}</dd>
+                <dd className="font-medium">{formatPrice(tax)}</dd>
               </div>
               <div className="flex justify-between text-sm pt-2 border-t border-gray-200">
                 <dt className="font-semibold text-[#111111]">Total</dt>
-                <dd className="font-bold text-[#111111]">{formatINR(total)}</dd>
+                <dd className="font-bold text-[#111111]">{formatPrice(total)}</dd>
               </div>
             </dl>
 

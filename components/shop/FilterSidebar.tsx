@@ -2,8 +2,8 @@
 
 import React from 'react'
 import { ChevronDown, X } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { formatINR } from '@/lib/utils'
+import { cn, formatPrice } from '@/lib/utils'
+import { SITE_CONFIG } from '@/lib/data/products'
 import type { FilterOptions } from '@/lib/services/products'
 
 export interface FilterState {
@@ -167,7 +167,7 @@ export function FilterSidebar({ filters, options, priceBounds, onChange, onReset
       )}
 
       {/* Price */}
-      <FilterSection title={`Price (${formatINR(0).slice(0, 1)})`}>
+      <FilterSection title={`Price (${SITE_CONFIG.currency})`}>
         <div className="flex items-center gap-2">
           <input
             type="number"
@@ -194,8 +194,8 @@ export function FilterSidebar({ filters, options, priceBounds, onChange, onReset
           />
         </div>
         <div className="mt-2 flex justify-between text-[11px] text-gray-400">
-          <span>{formatINR(priceBounds[0])}</span>
-          <span>{formatINR(priceBounds[1])}</span>
+          <span>{formatPrice(priceBounds[0])}</span>
+          <span>{formatPrice(priceBounds[1])}</span>
         </div>
         {priceIsActive && (
           <button

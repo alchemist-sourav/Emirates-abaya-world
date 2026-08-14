@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { cn } from '@/lib/utils'
-import { formatINR } from '@/lib/utils'
+import { formatPrice } from '@/lib/utils'
 import type { SizeOption, LengthOption, HijabOption } from '@/types/product'
 
 interface ProductOptionsProps {
@@ -165,7 +165,7 @@ export function ProductOptions({
                 'block text-xs mt-0.5',
                 selectedHijab === hijab.id ? 'text-[#C9A227]' : hijab.price > 0 ? 'text-gray-500' : 'text-gray-400'
               )}>
-                {hijab.price > 0 ? `+${formatINR(hijab.price)}` : 'No hijab'}
+                {hijab.price > 0 ? `+${formatPrice(hijab.price)}` : 'No hijab'}
               </span>
             </button>
           ))}

@@ -1,22 +1,19 @@
+import { SITE_CONFIG } from '@/lib/data/products'
+
 export { cn } from './cn'
 
-/** India-first currency formatting (₹, en-IN grouping) */
-export function formatINR(price: number): string {
-  return `₹${price.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
-}
-
-/** Generic price formatter, defaults to INR for India-first store */
-export function formatPrice(price: number, currency = 'INR'): string {
-  return new Intl.NumberFormat('en-IN', {
+/** Region-aware price formatting (reads currency, locale & decimals from SITE_CONFIG) */
+export function formatPrice(price: number, currency?: string): string {
+  return new Intl.NumberFormat(SITE_CONFIG.locale, {
     style: 'currency',
-    currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    currency: currency ?? SITE_CONFIG.currency,
+    minimumFractionDigits: SITE_CONFIG.priceDecimals,
+    maximumFractionDigits: SITE_CONFIG.priceDecimals,
   }).format(price)
 }
 
 export function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString('en-IN', {
+  return new Date(dateString).toLocaleDateString(SITE_CONFIG.locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',

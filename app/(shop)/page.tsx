@@ -1,11 +1,12 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, Star } from 'lucide-react'
+import { ArrowRight, Star, Quote } from 'lucide-react'
 import { ProductGrid } from '@/components/products/ProductGrid'
+import { ProductCarousel } from '@/components/home/ProductCarousel'
 import { RecentlyViewed } from '@/components/home/RecentlyViewed'
+import { formatPrice } from '@/lib/utils'
 import {
-  getBestSellers,
   getNewArrivals,
   getCategories,
   getLuxuryProducts,
@@ -16,12 +17,12 @@ import {
 } from '@/lib/services/products'
 
 export const metadata: Metadata = {
-  title: 'Emirates Abaya World – Premium Abayas & Hijabs, Delivered Across India',
+  title: 'EMIRATES — Premium Abayas, Abaya Dresses & Hijabs | Handcrafted in Dubai',
   description:
-    'Shop premium abayas, hijabs and modest fashion online in India. Luxury, everyday, open, party and prayer abayas with COD, easy returns and free shipping above ₹1,999.',
+    'Discover handcrafted abayas, abaya dresses and hijabs from Dubai. Premium modest fashion with express GCC delivery and easy returns.',
   openGraph: {
-    title: 'Emirates Abaya World – Premium Abayas & Hijabs',
-    description: 'Shop premium abayas, hijabs and modest fashion online in India.',
+    title: 'EMIRATES — Premium Modest Fashion, Dubai',
+    description: 'Handcrafted abayas and hijabs, tailored for the modern woman.',
     images: [{ url: '/og-image.jpg', width: 1200, height: 630 }],
   },
 }
@@ -41,7 +42,7 @@ function SectionHeader({
     <div className="flex items-end justify-between mb-6">
       <div>
         {eyebrow && <span className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#C9A227] block mb-1.5">{eyebrow}</span>}
-        <h2 className="font-heading text-xl sm:text-2xl font-bold text-[#111111]">{title}</h2>
+        <h2 className="font-heading text-xl sm:text-2xl lg:text-3xl font-bold text-[#111111]">{title}</h2>
       </div>
       {href && (
         <Link href={href} className="flex items-center gap-1 text-sm font-medium text-[#111111] hover:text-[#C9A227] whitespace-nowrap">
@@ -74,10 +75,8 @@ function EditorialBanner({
   return (
     <Link
       href={href}
-      className={cn(
-        'group relative block overflow-hidden bg-[#F7F4F1]',
-        tall ? 'aspect-[4/5] sm:aspect-[3/4]' : 'aspect-[4/5] sm:aspect-[16/10]'
-      )}
+      className="group relative block overflow-hidden bg-[#F7F4F1]"
+      style={{ aspectRatio: tall ? '3 / 4' : '16 / 10' }}
     >
       <Image
         src={image}
@@ -122,13 +121,21 @@ function cn(...classes: (string | false | undefined)[]) {
   return classes.filter(Boolean).join(' ')
 }
 
+const INSTAGRAM_GRID = [
+  'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80',
+  'https://images.unsplash.com/photo-1583484963886-cfe2bff2945f?w=600&q=80',
+  'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
+  'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=600&q=80',
+  'https://images.unsplash.com/photo-1571945153237-4929e783af4a?w=600&q=80',
+  'https://images.unsplash.com/photo-1550928431-ee0ec6db30d3?w=600&q=80',
+]
+
 export default async function HomePage() {
   const [
-    bestSellers, newArrivals, categories, luxury,
+    newArrivals, categories, luxury,
     collections, reviews, config, hijabs, prayer,
   ] = await Promise.all([
-    getBestSellers(4),
-    getNewArrivals(4),
+    getNewArrivals(8),
     getCategories(),
     getLuxuryProducts(4),
     getCollections(),
@@ -139,13 +146,13 @@ export default async function HomePage() {
   ])
 
   const heroImage = 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1600&q=80'
+  const editorialImage = 'https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=1200&q=80'
   const newBanner = collections.find((c) => c.slug === 'new-arrivals')?.image
   const luxBanner = collections.find((c) => c.slug === 'luxury')?.image
-  const saleBanner = collections.find((c) => c.slug === 'sale')?.image
 
   return (
     <>
-      {/* ═══════════ 1. HERO — full-width editorial banner ═══════════ */}
+      {/* ═══════════ 1. HERO — editorial with watermark ═══════════ */}
       <section className="hero" aria-label="Featured collection">
         <div className="hero-image">
           <Image
@@ -159,31 +166,45 @@ export default async function HomePage() {
         </div>
         <div className="hero-inner">
           <div className="hero-content">
-            <span className="eyebrow">Emirates Abaya World</span>
-            <h1>Modesty Meets Elegance</h1>
-            <p>Discover our latest abaya collection — handcrafted modest fashion for the modern woman across India.</p>
+            <span className="font-heading italic text-[13px] lg:text-sm tracking-[0.35em] uppercase text-[#C9A227]">
+              New Collection
+            </span>
+            <h1>Modest Fashion, Redefined</h1>
+            <p>
+              Handcrafted abayas, abaya dresses and hijabs from the heart of Dubai —
+              tailored for the modern woman who moves gracefully through every occasion.
+            </p>
             <Link href="/shop?tag=new" className="hero-cta">
               SHOP NOW
             </Link>
           </div>
         </div>
+        <span className="absolute bottom-2 right-3 lg:right-8 font-heading font-bold text-[64px] lg:text-[160px] leading-none text-white/10 tracking-[0.15em] select-none pointer-events-none" aria-hidden="true">
+          EMIRATES
+        </span>
       </section>
 
-      {/* ═══════════ 2. COLLECTION BANNERS — editorial ═══════════ */}
+      {/* ═══════════ 2. SHOP THE COLLECTIONS — two editorial cards ═══════════ */}
       <section className="py-10 lg:py-14 bg-white" aria-labelledby="collection-heading">
         <div className="site-container">
-          <SectionHeader eyebrow="Collections" title="Shop by Collection" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <EditorialBanner image={newBanner ?? heroImage} eyebrow="Just in" title="New Arrivals" href="/shop?tag=new" />
-            <EditorialBanner image={luxBanner ?? heroImage} eyebrow="Premium" title="Luxury Abayas" href="/shop?collection=luxury" />
-            <EditorialBanner image={heroImage} eyebrow="Everyday" title="Everyday Modest Wear" href="/shop?category=everyday-abayas" />
-            <EditorialBanner image={saleBanner ?? heroImage} eyebrow="Limited time" title="Clearance Sale" href="/shop?sale=true" />
+          <SectionHeader eyebrow="Curated for you" title="Shop the Collections" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <EditorialBanner image={newBanner ?? heroImage} eyebrow="Just in" title="New Arrivals" description="Fresh silhouettes and limited drops, straight from the atelier." href="/shop?tag=new" tall />
+            <EditorialBanner image={luxBanner ?? heroImage} eyebrow="The Maison Edit" title="Luxury Abayas" description="Hand-finished masterpieces for weddings, Eid and grand occasions." href="/shop?collection=luxury" tall />
           </div>
         </div>
       </section>
 
-      {/* ═══════════ 3. CATEGORY COLLECTIONS ═══════════ */}
-      <section className="py-10 lg:py-14 bg-[#F9F6F2]" aria-labelledby="category-heading">
+      {/* ═══════════ 3. LATEST DESIGNS — carousel ═══════════ */}
+      <section className="py-10 lg:py-14 bg-[#F9F6F2]" aria-labelledby="latest-heading">
+        <div className="site-container">
+          <SectionHeader eyebrow="Just landed" title="Latest Designs" href="/shop?tag=new" />
+          <ProductCarousel products={newArrivals} id="latest-carousel" />
+        </div>
+      </section>
+
+      {/* ═══════════ 4. SHOP BY CATEGORY ═══════════ */}
+      <section className="py-10 lg:py-14 bg-white" aria-labelledby="category-heading">
         <div className="site-container">
           <SectionHeader eyebrow="Browse" title="Shop by Category" href="/shop" />
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -191,7 +212,7 @@ export default async function HomePage() {
               <Link
                 key={cat.id}
                 href={`/shop?category=${cat.slug}`}
-                className="group relative block aspect-[4/5] overflow-hidden bg-white"
+                className="group relative block aspect-[4/5] overflow-hidden bg-[#F7F4F1]"
               >
                 <Image
                   src={cat.image}
@@ -211,19 +232,35 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════ 4. NEW ARRIVALS ═══════════ */}
-      <section className="py-10 lg:py-14 bg-white" aria-labelledby="new-heading">
-        <div className="site-container">
-          <SectionHeader eyebrow="Just in" title="New Arrivals" href="/shop?tag=new" />
-          <ProductGrid products={newArrivals} columns={4} priorityCount={4} />
-        </div>
-      </section>
-
-      {/* ═══════════ 5. BESTSELLERS ═══════════ */}
-      <section className="py-10 lg:py-14 bg-[#F9F6F2]" aria-labelledby="best-heading">
-        <div className="site-container">
-          <SectionHeader eyebrow="Most loved" title="Best Sellers" href="/shop?sort=best-selling" />
-          <ProductGrid products={bestSellers} columns={4} />
+      {/* ═══════════ 5. THE EDIT — editorial split banner ═══════════ */}
+      <section className="py-10 lg:py-14 bg-[#F9F6F2]" aria-labelledby="edit-heading">
+        <div className="site-container grid grid-cols-1 lg:grid-cols-2 items-stretch overflow-hidden">
+          <div className="relative min-h-[320px] lg:min-h-full">
+            <Image
+              src={editorialImage}
+              alt="The Emirates Edit — luxury abayas"
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
+          </div>
+          <div className="bg-[#111111] text-white p-8 lg:p-14 flex flex-col justify-center">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#C9A227] mb-4">The Emirates Edit</span>
+            <h2 id="edit-heading" className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-5">
+              Where heritage
+              <br />
+              <span className="italic text-[#D4956A]">meets modern form.</span>
+            </h2>
+            <p className="text-gray-400 text-sm leading-relaxed mb-8 max-w-md">
+              Every piece is cut, draped and hand-finished in our Dubai atelier. We obsess over
+              fabric, fit and finish so you can feel quietly extraordinary.
+            </p>
+            <div>
+              <Link href="/about" className="inline-flex items-center gap-2 bg-[#C9A227] text-[#111111] text-sm font-semibold px-7 py-3.5 rounded-full hover:bg-[#D4956A] transition-colors">
+                Discover Our Story <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -262,7 +299,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════ 8. HIJABS ═══════════ */}
+      {/* ═══════════ 8. MATCHING HIJABS ═══════════ */}
       <section className="py-10 lg:py-14 bg-white" aria-labelledby="hijab-heading">
         <div className="site-container">
           <SectionHeader eyebrow="Complement" title="Matching Hijabs" href="/shop?category=hijabs" />
@@ -270,13 +307,19 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════ 9. CUSTOMER REVIEWS ═══════════ */}
+      {/* ═══════════ 9. TESTIMONIALS ═══════════ */}
       <section className="py-10 lg:py-14 bg-[#F9F6F2]" aria-labelledby="reviews-heading">
         <div className="site-container">
-          <SectionHeader eyebrow="Loved by women" title="Customer Reviews" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="text-center mb-10">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#C9A227] block mb-3">Testimonials</span>
+            <h2 id="reviews-heading" className="font-heading text-2xl sm:text-3xl font-bold text-[#111111]">
+              Loved by women worldwide
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {reviews.map((review) => (
-              <figure key={review.id} className="bg-white border border-[#E5E5E5] p-6">
+              <figure key={review.id} className="bg-white border border-[#F0EEEC] rounded-xl p-7 relative hover:shadow-md transition-shadow">
+                <Quote className="h-7 w-7 text-[#C9A227]/40 mb-4" strokeWidth={1.2} aria-hidden="true" />
                 <div className="flex items-center gap-0.5 mb-3">
                   {[1, 2, 3, 4, 5].map((i) => (
                     <Star
@@ -287,8 +330,8 @@ export default async function HomePage() {
                     />
                   ))}
                 </div>
-                <blockquote className="text-sm text-[#4b5563] leading-relaxed mb-4">&ldquo;{review.comment}&rdquo;</blockquote>
-                <figcaption>
+                <blockquote className="text-sm text-[#4b5563] leading-relaxed mb-5">&ldquo;{review.comment}&rdquo;</blockquote>
+                <figcaption className="border-t border-gray-100 pt-4">
                   <p className="text-[13px] font-semibold text-[#111111]">{review.userName}</p>
                   <p className="text-[11px] text-[#6B7280]">{review.location}</p>
                 </figcaption>
@@ -298,7 +341,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════ 10. ABOUT / BRAND STORY ═══════════ */}
+      {/* ═══════════ 10. BRAND STORY ═══════════ */}
       <section className="py-12 lg:py-16 bg-white" aria-labelledby="about-heading">
         <div className="site-container max-w-3xl text-center">
           <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#C9A227] block mb-3">Our Story</span>
@@ -306,7 +349,11 @@ export default async function HomePage() {
             Elegance, Tailored for the Modern Woman
           </h2>
           <p className="text-[#6B7280] text-sm sm:text-base leading-relaxed mb-6">
-            Emirates Abaya World brings refined, handcrafted modest fashion to women across India. Each abaya is designed for grace, comfort and every occasion — from everyday elegance to weddings and prayer. Quality-checked, delivered pan-India, with {config.claims.freeShipping ? `free shipping above ${new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(config.freeShippingAbove)}, ` : ''}COD and easy returns.
+            EMIRATES brings refined, handcrafted modest fashion from Dubai to women across the
+            globe. Each abaya is designed for grace, comfort and every occasion — from everyday
+            elegance to weddings and prayer. Quality-checked, delivered worldwide
+            {config.claims.freeShipping ? ` with free shipping above ${formatPrice(config.freeShippingAbove)},` : ''} and
+            easy returns.
           </p>
           <Link href="/about" className="inline-flex items-center gap-2 text-sm font-semibold text-[#111111] border-b border-[#111111] pb-1 hover:border-[#C9A227] hover:text-[#C9A227] transition-colors">
             Read More <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -314,7 +361,41 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════ 11. RECENTLY VIEWED ═══════════ */}
+      {/* ═══════════ 11. INSTAGRAM GRID ═══════════ */}
+      <section className="py-10 lg:py-14 bg-[#FAF7F2]" aria-labelledby="instagram-heading">
+        <div className="site-container">
+          <div className="text-center mb-8">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#C9A227] block mb-3">Follow the maison</span>
+            <h2 id="instagram-heading" className="font-heading text-2xl sm:text-3xl font-bold text-[#111111] mb-1">
+              @{config.instagram.replace('@', '')}
+            </h2>
+            <p className="text-sm text-gray-500">Daily style inspiration, atelier glimpses and member previews.</p>
+          </div>
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3">
+            {INSTAGRAM_GRID.map((src, i) => (
+              <a
+                key={i}
+                href={`https://instagram.com/${config.instagram.replace('@', '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative block aspect-square overflow-hidden bg-[#F0ECe6]"
+                aria-label={`Instagram post ${i + 1}`}
+              >
+                <Image
+                  src={src}
+                  alt={`EMIRATES Instagram post ${i + 1}`}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 640px) 33vw, 16vw"
+                />
+                <span className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" aria-hidden="true" />
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ 12. RECENTLY VIEWED ═══════════ */}
       <section className="pb-12 lg:pb-16 bg-white border-t border-[#E5E5E5]">
         <RecentlyViewed />
       </section>

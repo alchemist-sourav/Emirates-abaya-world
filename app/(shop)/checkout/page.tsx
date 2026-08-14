@@ -7,22 +7,7 @@ import { useRouter } from 'next/navigation'
 import { ShieldCheck, CreditCard, Smartphone, Building, Wallet, Package, ArrowLeft, Lock } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
 import { createOrder, getSiteConfig } from '@/lib/services/products'
-import { INDIAN_STATES } from '@/lib/data/india'
-import { formatINR } from '@/lib/utils'
-
-const DELIVERY_METHODS = [
-  { id: 'standard', name: 'Standard Delivery', description: '3–5 business days', price: 50 },
-  { id: 'express', name: 'Express Delivery', description: '1–2 business days', price: 120 },
-  { id: 'free', name: 'Free Delivery', description: '5–7 business days', price: 0, minOrder: 1999 },
-]
-
-const PAYMENT_OPTIONS = [
-  { id: 'upi',        label: 'UPI',            icon: Smartphone },
-  { id: 'card',       label: 'Credit / Debit Card', icon: CreditCard },
-  { id: 'netbanking', label: 'Net Banking',    icon: Building },
-  { id: 'wallet',     label: 'Wallet',         icon: Wallet },
-  { id: 'cod',        label: 'Cash on Delivery', icon: Package },
-]
+import { formatPrice } from '@/lib/utils'
 
 interface FormData {
   fullName: string
@@ -71,22 +56,52 @@ export default function CheckoutPage() {
   const config = getSiteConfig()
   const subtotal = getSubtotal()
 
+  const isIndia = config.currency === 'INR'
+
+  const DELIVERY_METHODS = isIndia
+    ? [
+        { id: 'standard', name: 'Standard Delivery', description: '3–5 business days', price: 50 },
+        { id: 'express', name: 'Express Delivery', description: '1–2 business days', price: 120 },
+        { id: 'free', name: 'Free Delivery', description: '5–7 business days', price: 0, minOrder: 1999 },
+      ]
+    : [
+        { id: 'standard', name: 'Standard Delivery', description: '2–3 business days', price: config.baseShippingFee },
+        { id: 'express', name: 'Express Delivery', description: '1–2 business days', price: 60 },
+        { id: 'free', name: 'Free Delivery', description: '2–4 business days', price: 0, minOrder: config.freeShippingAbove },
+      ]
+
+  const PAYMENT_OPTIONS = isIndia
+    ? [
+        { id: 'upi',        label: 'UPI',            icon: Smartphone },
+        { id: 'card',       label: 'Credit / Debit Card', icon: CreditCard },
+        { id: 'netbanking', label: 'Net Banking',    icon: Building },
+        { id: 'wallet',     label: 'Wallet',         icon: Wallet },
+        ...(config.claims.codAvailable ? [{ id: 'cod', label: 'Cash on Delivery', icon: Package }] : []),
+      ]
+    : [
+        { id: 'card',       label: 'Credit / Debit Card', icon: CreditCard },
+        { id: 'applepay',   label: 'Apple Pay',      icon: Smartphone },
+        { id: 'banktransfer', label: 'Bank Transfer', icon: Building },
+        ...(config.claims.codAvailable ? [{ id: 'cod', label: 'Cash on Delivery', icon: Package }] : []),
+      ]
+
   const [formData, setFormData] = useState<FormData>({
     fullName: '', mobile: '', email: '', house: '', area: '', landmark: '', city: '', state: '', pinCode: '',
   })
   const [errors, setErrors]         = useState<FormErrors>({})
   const [delivery, setDelivery]     = useState('standard')
-  const [payment, setPayment]       = useState('upi')
+  const [payment, setPayment]       = useState(isIndia ? 'upi' : 'card')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const selectedDelivery = DELIVERY_METHODS.find(d => d.id === delivery)
-  const shipping = selectedDelivery?.price ?? 50
+  const shipping = selectedDelivery?.price ?? (isIndia ? 50 : config.baseShippingFee)
   const codFee = payment === 'cod' ? config.codFee : 0
   const tax = Math.round(subtotal * config.taxRate)
   const total = subtotal + shipping + tax + codFee
 
   const handleChange = (id: keyof FormData, value: string) => {
-    const sanitized = id === 'mobile' || id === 'pinCode' ? value.replace(/\D/g, '') : value
+    const numeric = id === 'mobile' || (id === 'pinCode' && isIndia)
+    const sanitized = numeric ? value.replace(/\D/g, '') : value
     setFormData(prev => ({ ...prev, [id]: sanitized }))
     if (errors[id]) setErrors(prev => ({ ...prev, [id]: undefined }))
   }
@@ -95,8 +110,10 @@ export default function CheckoutPage() {
     const errs: FormErrors = {}
     const required: Array<keyof FormData> = ['fullName', 'mobile', 'house', 'area', 'city', 'state', 'pinCode']
     required.forEach(f => { if (!formData[f].trim()) errs[f] = 'This field is required' })
-    if (formData.mobile && !/^[6-9]\d{9}$/.test(formData.mobile)) errs.mobile = 'Enter a valid 10-digit Indian mobile number'
-    if (formData.pinCode && !/^\d{6}$/.test(formData.pinCode)) errs.pinCode = 'Enter a valid 6-digit PIN code'
+    if (formData.mobile && !new RegExp(config.phonePattern).test(formData.mobile.trim())) {
+      errs.mobile = isIndia ? 'Enter a valid 10-digit Indian mobile number' : 'Enter a valid phone number'
+    }
+    if (isIndia && formData.pinCode && !/^\d{6}$/.test(formData.pinCode)) errs.pinCode = 'Enter a valid 6-digit PIN code'
     if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) errs.email = 'Invalid email'
     setErrors(errs)
     return Object.keys(errs).length === 0
@@ -134,7 +151,7 @@ export default function CheckoutPage() {
       <div className="bg-white border-b border-[#E5E5E5] py-4">
         <div className="container-xl flex items-center justify-between">
           <Link href="/" className="font-heading text-lg font-bold text-[#111111]">
-            Emirates Abaya World
+            {isIndia ? 'Emirates Abaya World' : 'EMIRATES*'}
           </Link>
           <div className="flex items-center gap-2 text-xs text-[#6B7280]">
             <ShieldCheck className="h-4 w-4 text-[#C9A227]" aria-hidden="true" />
@@ -163,7 +180,7 @@ export default function CheckoutPage() {
                   Contact Information
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <InputField label="Mobile Number" id="mobile" type="tel" placeholder="10-digit mobile number" maxLength={10} value={formData.mobile} onChange={handleChange} error={errors.mobile} required />
+                  <InputField label="Mobile Number" id="mobile" type="tel" placeholder={isIndia ? '10-digit mobile number' : 'e.g. 050 123 4567'} maxLength={isIndia ? 10 : 20} value={formData.mobile} onChange={handleChange} error={errors.mobile} required />
                   <InputField label="Email" id="email" type="email" placeholder="you@example.com" value={formData.email} onChange={handleChange} error={errors.email} />
                 </div>
               </div>
@@ -185,7 +202,7 @@ export default function CheckoutPage() {
                     <InputField label="City" id="city" value={formData.city} onChange={handleChange} error={errors.city} required />
                     <div>
                       <label htmlFor="state" className="form-label">
-                        State<span className="text-red-500 ml-0.5">*</span>
+                        {isIndia ? 'State' : 'Emirate'}<span className="text-red-500 ml-0.5">*</span>
                       </label>
                       <select
                         id="state"
@@ -193,8 +210,8 @@ export default function CheckoutPage() {
                         onChange={(e) => handleChange('state', e.target.value)}
                         className={`form-select ${errors.state ? 'border-red-400' : ''}`}
                       >
-                        <option value="">Select state</option>
-                        {INDIAN_STATES.map((state) => (
+                        <option value="">{isIndia ? 'Select state' : 'Select emirate'}</option>
+                        {config.states.map((state) => (
                           <option key={state} value={state}>{state}</option>
                         ))}
                       </select>
@@ -202,7 +219,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <InputField label="PIN Code" id="pinCode" type="tel" placeholder="6-digit PIN" maxLength={6} value={formData.pinCode} onChange={handleChange} error={errors.pinCode} required />
+                    <InputField label={config.pinLabel} id="pinCode" type={isIndia ? 'tel' : 'text'} placeholder={isIndia ? '6-digit PIN' : 'e.g. Dubai'} maxLength={isIndia ? 6 : 30} value={formData.pinCode} onChange={handleChange} error={errors.pinCode} required />
                   </div>
                 </div>
               </div>
@@ -243,7 +260,7 @@ export default function CheckoutPage() {
                           </div>
                         </div>
                         <span className="text-sm font-semibold text-[#111111]">
-                          {method.price === 0 ? 'FREE' : formatINR(method.price)}
+                          {method.price === 0 ? 'FREE' : formatPrice(method.price)}
                         </span>
                       </label>
                     )
@@ -258,7 +275,7 @@ export default function CheckoutPage() {
                   Payment Method
                   <span className="ml-2 text-[10px] font-medium text-[#6B7280] bg-[#F8F6F2] px-2 py-0.5 align-middle">
                     <Lock className="h-3 w-3 inline mr-0.5" aria-hidden="true" />
-                    Powered by Razorpay
+                    {isIndia ? 'Powered by Razorpay' : '256-bit SSL Secure'}
                   </span>
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
@@ -284,7 +301,7 @@ export default function CheckoutPage() {
                 {payment === 'card' && (
                   <div className="space-y-4 pt-4 border-t border-[#E5E5E5]">
                     <p className="text-xs text-[#6B7280]">
-                      Card details are collected securely by Razorpay at payment step.
+                      Card details are collected securely at the payment step. {isIndia && 'This is handled by Razorpay.'}
                     </p>
                   </div>
                 )}
@@ -309,10 +326,24 @@ export default function CheckoutPage() {
                     </p>
                   </div>
                 )}
+                {payment === 'applepay' && (
+                  <div className="pt-4 border-t border-[#E5E5E5]">
+                    <p className="text-xs text-[#6B7280]">
+                      Pay securely with Apple Pay and confirm with Face ID or Touch ID at checkout.
+                    </p>
+                  </div>
+                )}
+                {payment === 'banktransfer' && (
+                  <div className="pt-4 border-t border-[#E5E5E5]">
+                    <p className="text-xs text-[#6B7280]">
+                      We will email you the bank transfer details after you place your order.
+                    </p>
+                  </div>
+                )}
                 {payment === 'cod' && (
                   <div className="pt-4 border-t border-[#E5E5E5]">
                     <p className="text-sm text-[#6B7280] bg-amber-50 border border-amber-200 p-3">
-                      Cash on delivery available. A convenience fee of <span className="font-semibold text-[#111111]">{formatINR(config.codFee)}</span> applies.
+                      Cash on delivery available. A convenience fee of <span className="font-semibold text-[#111111]">{formatPrice(config.codFee)}</span> applies.
                     </p>
                   </div>
                 )}
@@ -352,7 +383,7 @@ export default function CheckoutPage() {
                         {item.hijab && <p className="text-[10px] text-[#6B7280]">Hijab: {item.hijab}</p>}
                       </div>
                       <p className="text-xs font-semibold text-[#111111] flex-shrink-0">
-                        {formatINR((item.price + (item.hijabPrice ?? 0)) * item.quantity)}
+                        {formatPrice((item.price + (item.hijabPrice ?? 0)) * item.quantity)}
                       </p>
                     </div>
                   ))}
@@ -362,27 +393,27 @@ export default function CheckoutPage() {
                 <div className="border-t border-[#E5E5E5] pt-4 space-y-2.5">
                   <div className="flex justify-between text-sm">
                     <span className="text-[#6B7280]">Subtotal</span>
-                    <span className="font-medium text-[#111111]">{formatINR(subtotal)}</span>
+                    <span className="font-medium text-[#111111]">{formatPrice(subtotal)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-[#6B7280]">Shipping</span>
                     <span className={`font-medium ${shipping === 0 ? 'text-green-600' : 'text-[#111111]'}`}>
-                      {shipping === 0 ? 'FREE' : formatINR(shipping)}
+                      {shipping === 0 ? 'FREE' : formatPrice(shipping)}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-[#6B7280]">Tax (incl.)</span>
-                    <span className="font-medium text-[#111111]">{formatINR(tax)}</span>
+                    <span className="text-[#6B7280]">Tax ({isIndia ? 'incl.' : 'VAT incl.'})</span>
+                    <span className="font-medium text-[#111111]">{formatPrice(tax)}</span>
                   </div>
                   {codFee > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className="text-[#6B7280]">COD fee</span>
-                      <span className="font-medium text-[#111111]">{formatINR(codFee)}</span>
+                      <span className="font-medium text-[#111111]">{formatPrice(codFee)}</span>
                     </div>
                   )}
                   <div className="flex justify-between pt-3 border-t border-[#E5E5E5]">
                     <span className="font-semibold text-[#111111]">Total</span>
-                    <span className="text-xl font-bold text-[#111111]">{formatINR(total)}</span>
+                    <span className="text-xl font-bold text-[#111111]">{formatPrice(total)}</span>
                   </div>
                 </div>
 
@@ -392,7 +423,7 @@ export default function CheckoutPage() {
                   disabled={isSubmitting}
                   className="btn-primary w-full mt-6 py-4 text-base justify-center"
                 >
-                  {isSubmitting ? 'Placing Order…' : `Place Order • ${formatINR(total)}`}
+                  {isSubmitting ? 'Placing Order…' : `Place Order • ${formatPrice(total)}`}
                 </button>
 
                 <div className="flex items-center justify-center gap-2 mt-4">
