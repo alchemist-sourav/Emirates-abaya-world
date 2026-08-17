@@ -7,7 +7,7 @@ import { useSearchStore } from '@/store/search'
 import { searchProducts, POPULAR_SEARCHES } from '@/lib/services/products'
 import { CATEGORIES } from '@/lib/data/products'
 import type { Product } from '@/types/product'
-import { cn } from '@/lib/utils'
+import { cn, formatPrice } from '@/lib/utils'
 import Image from 'next/image'
 
 // Quick category chips shown when the search box is empty
@@ -348,7 +348,7 @@ export function SearchOverlay() {
 
                             {/* Price */}
                             <span className="flex-shrink-0 text-sm font-semibold text-[#111111]">
-                              ₹{product.price.toLocaleString('en-IN')}
+                              {formatPrice(product.price)}
                             </span>
                           </button>
                         </li>

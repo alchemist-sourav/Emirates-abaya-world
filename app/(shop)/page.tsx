@@ -10,18 +10,20 @@ import {
   getNewArrivals,
   getCategories,
   getLuxuryProducts,
-  getCollections,
   getCustomerReviews,
   getSiteConfig,
   getProducts,
+  getBestSellers,
 } from '@/lib/services/products'
+import { NewsletterSection } from '@/components/layout/NewsletterSection'
+
 
 export const metadata: Metadata = {
-  title: 'EMIRATES — Premium Abayas, Abaya Dresses & Hijabs | Handcrafted in Dubai',
+  title: 'EMIRATES — Premium Abayas, Abaya Dresses & Hijabs | Handcrafted in Kerala',
   description:
-    'Discover handcrafted abayas, abaya dresses and hijabs from Dubai. Premium modest fashion with express GCC delivery and easy returns.',
+    'Discover handcrafted abayas, abaya dresses and hijabs from Kerala. Premium modest fashion with express India delivery and easy returns.',
   openGraph: {
-    title: 'EMIRATES — Premium Modest Fashion, Dubai',
+    title: 'EMIRATES — Premium Modest Fashion, Kerala',
     description: 'Handcrafted abayas and hijabs, tailored for the modern woman.',
     images: [{ url: '/og-image.jpg', width: 1200, height: 630 }],
   },
@@ -122,33 +124,33 @@ function cn(...classes: (string | false | undefined)[]) {
 }
 
 const INSTAGRAM_GRID = [
-  'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80',
-  'https://images.unsplash.com/photo-1583484963886-cfe2bff2945f?w=600&q=80',
-  'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
-  'https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=600&q=80',
-  'https://images.unsplash.com/photo-1571945153237-4929e783af4a?w=600&q=80',
-  'https://images.unsplash.com/photo-1550928431-ee0ec6db30d3?w=600&q=80',
+  '/images/instagram/instagram-1.jpg',
+  '/images/instagram/instagram-2.jpg',
+  '/images/instagram/instagram-3.jpg',
+  '/images/instagram/instagram-4.jpg',
+  '/images/instagram/instagram-5.jpg',
+  '/images/instagram/instagram-6.jpg',
 ]
 
 export default async function HomePage() {
   const [
     newArrivals, categories, luxury,
-    collections, reviews, config, hijabs, prayer,
+    reviews, config, hijabs, prayer, bestsellers,
   ] = await Promise.all([
     getNewArrivals(8),
     getCategories(),
     getLuxuryProducts(4),
-    getCollections(),
     getCustomerReviews(6),
     getSiteConfig(),
     getProducts({ categories: ['hijabs'] }).then((p) => p.slice(0, 4)),
     getProducts({ categories: ['prayer-abayas'] }).then((p) => p.slice(0, 4)),
+    getBestSellers(4),
   ])
 
-  const heroImage = 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1600&q=80'
-  const editorialImage = 'https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=1200&q=80'
-  const newBanner = collections.find((c) => c.slug === 'new-arrivals')?.image
-  const luxBanner = collections.find((c) => c.slug === 'luxury')?.image
+  const heroImage = '/images/hero/emirates-hero.jpg'
+  const editorialImage = '/images/products/editorial-banner.jpg'
+  const abayasImage = categories.find((c) => c.slug === 'abayas')?.image
+  const dressesImage = '/images/products/dresses-card.jpg'
 
   return (
     <>
@@ -160,7 +162,7 @@ export default async function HomePage() {
             alt="Luxury abaya collection"
             fill
             priority
-            className="object-cover"
+            className="object-cover object-[center_30%]"
             sizes="100vw"
           />
         </div>
@@ -171,7 +173,7 @@ export default async function HomePage() {
             </span>
             <h1>Modest Fashion, Redefined</h1>
             <p>
-              Handcrafted abayas, abaya dresses and hijabs from the heart of Dubai —
+              Handcrafted abayas, abaya dresses and hijabs from the heart of Kerala —
               tailored for the modern woman who moves gracefully through every occasion.
             </p>
             <Link href="/shop?tag=new" className="hero-cta">
@@ -179,31 +181,85 @@ export default async function HomePage() {
             </Link>
           </div>
         </div>
-        <span className="absolute bottom-2 right-3 lg:right-8 font-heading font-bold text-[64px] lg:text-[160px] leading-none text-white/10 tracking-[0.15em] select-none pointer-events-none" aria-hidden="true">
+        <span className="absolute bottom-2 right-3 lg:right-8 font-heading font-bold text-[64px] lg:text-[160px] leading-none text-white/[0.06] tracking-[0.15em] select-none pointer-events-none" aria-hidden="true">
           EMIRATES
         </span>
       </section>
 
-      {/* ═══════════ 2. SHOP THE COLLECTIONS — two editorial cards ═══════════ */}
+      {/* ═══════════ 2. SHOP THE COLLECTIONS — Abayas + Dresses ═══════════ */}
       <section className="py-10 lg:py-14 bg-white" aria-labelledby="collection-heading">
         <div className="site-container">
           <SectionHeader eyebrow="Curated for you" title="Shop the Collections" />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <EditorialBanner image={newBanner ?? heroImage} eyebrow="Just in" title="New Arrivals" description="Fresh silhouettes and limited drops, straight from the atelier." href="/shop?tag=new" tall />
-            <EditorialBanner image={luxBanner ?? heroImage} eyebrow="The Maison Edit" title="Luxury Abayas" description="Hand-finished masterpieces for weddings, Eid and grand occasions." href="/shop?collection=luxury" tall />
+            <EditorialBanner image={abayasImage ?? heroImage} eyebrow="The Signature" title="Abayas" description="Timeless silhouettes, handcrafted in Kerala for the modern woman." href="/shop?category=abayas" tall />
+            <EditorialBanner image={dressesImage} eyebrow="The New Edit" title="Abaya Dresses" description="Modern occasion pieces that move beautifully from day to night." href="/shop?category=abayas&subcategory=modern" tall />
           </div>
         </div>
       </section>
 
-      {/* ═══════════ 3. LATEST DESIGNS — carousel ═══════════ */}
+      {/* ═══════════ 3. THE LATEST DESIGNS — carousel ═══════════ */}
       <section className="py-10 lg:py-14 bg-[#F9F6F2]" aria-labelledby="latest-heading">
         <div className="site-container">
-          <SectionHeader eyebrow="Just landed" title="Latest Designs" href="/shop?tag=new" />
+          <SectionHeader eyebrow="Just landed" title="The Latest Designs!" href="/shop?tag=new" />
           <ProductCarousel products={newArrivals} id="latest-carousel" />
         </div>
       </section>
 
-      {/* ═══════════ 4. SHOP BY CATEGORY ═══════════ */}
+      {/* ═══════════ 4. BESTSELLERS ═══════════ */}
+      {bestsellers.length > 0 && (
+        <section className="py-10 lg:py-14 bg-white" aria-labelledby="bestsellers-heading">
+          <div className="site-container">
+            <div className="text-center mb-10">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#C9A227] block mb-3">Our Top Picks</span>
+              <h2 id="bestsellers-heading" className="font-heading text-2xl sm:text-3xl font-bold text-[#111111]">
+                BESTSELLERS
+              </h2>
+              <p className="text-gray-500 text-sm mt-2 max-w-md mx-auto">The pieces our clients return to, season after season.</p>
+            </div>
+            <ProductGrid products={bestsellers} columns={4} />
+            <div className="text-center mt-8">
+              <Link href="/shop?sort=best-selling" className="inline-flex items-center gap-2 border border-[#111111] text-[#111111] text-sm font-semibold px-8 py-3.5 rounded-full hover:bg-[#111111] hover:text-white transition-colors">
+                View All Bestsellers <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ═══════════ 5. EDITORIAL BANNER — Elegant Modesty, Timeless Style ═══════════ */}
+      <section className="py-10 lg:py-14 bg-[#FAF7F2]" aria-labelledby="editorial-banner-heading">
+        <div className="site-container">
+          <div className="relative overflow-hidden bg-[#111111] text-white">
+            <Image
+              src={editorialImage}
+              alt="Elegant modesty, timeless style"
+              fill
+              className="object-cover opacity-50"
+              sizes="100vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" aria-hidden="true" />
+            <div className="relative px-6 py-16 lg:px-16 lg:py-24 max-w-2xl">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#C9A227] block mb-3">
+                The EMIRATES Edit
+              </span>
+              <h2 id="editorial-banner-heading" className="font-heading italic text-3xl sm:text-4xl lg:text-5xl font-semibold leading-tight">
+                Elegant Modesty,
+                <br />
+                Timeless Style
+              </h2>
+              <p className="mt-4 text-white/80 text-sm sm:text-base max-w-md leading-relaxed">
+                Cut, draped and hand-finished in Kerala — designed for the woman who moves through
+                every occasion with grace.
+              </p>
+              <Link href="/shop" className="mt-8 inline-flex items-center gap-2 bg-[#C9A227] text-[#111111] text-sm font-semibold px-8 py-3.5 rounded-full hover:bg-white transition-colors uppercase tracking-wider">
+                Shop the Collection <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ 6. SHOP BY CATEGORY ═══════════ */}
       <section className="py-10 lg:py-14 bg-white" aria-labelledby="category-heading">
         <div className="site-container">
           <SectionHeader eyebrow="Browse" title="Shop by Category" href="/shop" />
@@ -252,7 +308,7 @@ export default async function HomePage() {
               <span className="italic text-[#D4956A]">meets modern form.</span>
             </h2>
             <p className="text-gray-400 text-sm leading-relaxed mb-8 max-w-md">
-              Every piece is cut, draped and hand-finished in our Dubai atelier. We obsess over
+              Every piece is cut, draped and hand-finished in our atelier. We obsess over
               fabric, fit and finish so you can feel quietly extraordinary.
             </p>
             <div>
@@ -312,8 +368,8 @@ export default async function HomePage() {
         <div className="site-container">
           <div className="text-center mb-10">
             <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#C9A227] block mb-3">Testimonials</span>
-            <h2 id="reviews-heading" className="font-heading text-2xl sm:text-3xl font-bold text-[#111111]">
-              Loved by women worldwide
+            <h2 id="reviews-heading" className="font-heading italic text-2xl sm:text-3xl font-semibold text-[#111111]">
+              What Our Customers Say
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -349,7 +405,7 @@ export default async function HomePage() {
             Elegance, Tailored for the Modern Woman
           </h2>
           <p className="text-[#6B7280] text-sm sm:text-base leading-relaxed mb-6">
-            EMIRATES brings refined, handcrafted modest fashion from Dubai to women across the
+            EMIRATES brings refined, handcrafted modest fashion from Kerala to women across the
             globe. Each abaya is designed for grace, comfort and every occasion — from everyday
             elegance to weddings and prayer. Quality-checked, delivered worldwide
             {config.claims.freeShipping ? ` with free shipping above ${formatPrice(config.freeShippingAbove)},` : ''} and
@@ -365,9 +421,9 @@ export default async function HomePage() {
       <section className="py-10 lg:py-14 bg-[#FAF7F2]" aria-labelledby="instagram-heading">
         <div className="site-container">
           <div className="text-center mb-8">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#C9A227] block mb-3">Follow the maison</span>
+            <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#C9A227] block mb-3">Follow Us</span>
             <h2 id="instagram-heading" className="font-heading text-2xl sm:text-3xl font-bold text-[#111111] mb-1">
-              @{config.instagram.replace('@', '')}
+              Follow Us @emirates
             </h2>
             <p className="text-sm text-gray-500">Daily style inspiration, atelier glimpses and member previews.</p>
           </div>
@@ -378,7 +434,7 @@ export default async function HomePage() {
                 href={`https://instagram.com/${config.instagram.replace('@', '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative block aspect-square overflow-hidden bg-[#F0ECe6]"
+                className="group relative block aspect-square overflow-hidden bg-[#F0ECE6]"
                 aria-label={`Instagram post ${i + 1}`}
               >
                 <Image
@@ -395,7 +451,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ═══════════ 12. RECENTLY VIEWED ═══════════ */}
+      {/* ═══════════ 12. NEWSLETTER ═══════════ */}
+      <NewsletterSection />
+
+      {/* ═══════════ 13. RECENTLY VIEWED ═══════════ */}
       <section className="pb-12 lg:pb-16 bg-white border-t border-[#E5E5E5]">
         <RecentlyViewed />
       </section>

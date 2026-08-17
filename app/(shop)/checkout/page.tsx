@@ -10,7 +10,8 @@ import { createOrder, getSiteConfig } from '@/lib/services/products'
 import { formatPrice } from '@/lib/utils'
 
 interface FormData {
-  fullName: string
+  firstName: string
+  lastName: string
   mobile: string
   email: string
   house: string
@@ -18,6 +19,7 @@ interface FormData {
   landmark: string
   city: string
   state: string
+  country: string
   pinCode: string
 }
 
@@ -86,18 +88,20 @@ export default function CheckoutPage() {
       ]
 
   const [formData, setFormData] = useState<FormData>({
-    fullName: '', mobile: '', email: '', house: '', area: '', landmark: '', city: '', state: '', pinCode: '',
+    firstName: '', lastName: '', mobile: '', email: '', house: '', area: '', landmark: '', city: '', state: '', country: '', pinCode: '',
   })
   const [errors, setErrors]         = useState<FormErrors>({})
-  const [delivery, setDelivery]     = useState('standard')
+  const [delivery, setDelivery]     = useState(isIndia ? 'standard' : subtotal >= config.freeShippingAbove ? 'free' : 'standard')
   const [payment, setPayment]       = useState(isIndia ? 'upi' : 'card')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [coupon, setCoupon]         = useState('')
+  const [applied, setApplied]       = useState(false)
 
   const selectedDelivery = DELIVERY_METHODS.find(d => d.id === delivery)
   const shipping = selectedDelivery?.price ?? (isIndia ? 50 : config.baseShippingFee)
   const codFee = payment === 'cod' ? config.codFee : 0
-  const tax = Math.round(subtotal * config.taxRate)
-  const total = subtotal + shipping + tax + codFee
+  const discount = applied ? 25 : 0
+  const total = subtotal + shipping + codFee - discount
 
   const handleChange = (id: keyof FormData, value: string) => {
     const numeric = id === 'mobile' || (id === 'pinCode' && isIndia)
@@ -108,7 +112,7 @@ export default function CheckoutPage() {
 
   const validate = (): boolean => {
     const errs: FormErrors = {}
-    const required: Array<keyof FormData> = ['fullName', 'mobile', 'house', 'area', 'city', 'state', 'pinCode']
+    const required: Array<keyof FormData> = ['firstName', 'lastName', 'mobile', 'house', 'area', 'city', 'state', 'country', 'pinCode']
     required.forEach(f => { if (!formData[f].trim()) errs[f] = 'This field is required' })
     if (formData.mobile && !new RegExp(config.phonePattern).test(formData.mobile.trim())) {
       errs.mobile = isIndia ? 'Enter a valid 10-digit Indian mobile number' : 'Enter a valid phone number'
@@ -117,6 +121,11 @@ export default function CheckoutPage() {
     if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) errs.email = 'Invalid email'
     setErrors(errs)
     return Object.keys(errs).length === 0
+  }
+
+  const applyCoupon = () => {
+    const code = coupon.trim().toUpperCase()
+    setApplied(code === 'EMIRATES5')
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -149,11 +158,11 @@ export default function CheckoutPage() {
     <div className="min-h-screen bg-[#F8F6F2]">
       {/* Header bar */}
       <div className="bg-white border-b border-[#E5E5E5] py-4">
-        <div className="container-xl flex items-center justify-between">
-          <Link href="/" className="font-heading text-lg font-bold text-[#111111]">
-            {isIndia ? 'Emirates Abaya World' : 'EMIRATES*'}
+        <div className="container-xl flex items-center justify-between gap-3">
+          <Link href="/" className="font-heading text-base sm:text-lg font-bold text-[#111111] min-w-0 leading-snug break-words">
+            {config.businessName}
           </Link>
-          <div className="flex items-center gap-2 text-xs text-[#6B7280]">
+          <div className="flex items-center gap-2 text-xs text-[#6B7280] flex-shrink-0">
             <ShieldCheck className="h-4 w-4 text-[#C9A227]" aria-hidden="true" />
             Secure Checkout
           </div>
@@ -192,7 +201,10 @@ export default function CheckoutPage() {
                   Delivery Address
                 </h2>
                 <div className="space-y-4">
-                  <InputField label="Full Name" id="fullName" value={formData.fullName} onChange={handleChange} error={errors.fullName} required />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <InputField label="First Name" id="firstName" value={formData.firstName} onChange={handleChange} error={errors.firstName} required />
+                    <InputField label="Last Name" id="lastName" value={formData.lastName} onChange={handleChange} error={errors.lastName} required />
+                  </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <InputField label="House / Flat No." id="house" placeholder="e.g. Flat 4B, Rose Villa" value={formData.house} onChange={handleChange} error={errors.house} required />
                     <InputField label="Area / Street / Locality" id="area" placeholder="e.g. Linking Road, Bandra West" value={formData.area} onChange={handleChange} error={errors.area} required />
@@ -219,7 +231,24 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <InputField label={config.pinLabel} id="pinCode" type={isIndia ? 'tel' : 'text'} placeholder={isIndia ? '6-digit PIN' : 'e.g. Dubai'} maxLength={isIndia ? 6 : 30} value={formData.pinCode} onChange={handleChange} error={errors.pinCode} required />
+                    <div>
+                      <label htmlFor="country" className="form-label">
+                        Country<span className="text-red-500 ml-0.5">*</span>
+                      </label>
+                      <select
+                        id="country"
+                        value={formData.country}
+                        onChange={(e) => handleChange('country', e.target.value)}
+                        className={`form-select ${errors.country ? 'border-red-400' : ''}`}
+                      >
+                        <option value="">Select country</option>
+                        {['United Arab Emirates', 'Saudi Arabia', 'Kuwait', 'Bahrain', 'Oman', 'Qatar', 'United Kingdom', 'United States', 'India', 'Other'].map((c) => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                      {errors.country && <p className="form-error">{errors.country}</p>}
+                    </div>
+                    <InputField label="Postal Code" id="pinCode" type={isIndia ? 'tel' : 'text'} placeholder={isIndia ? '6-digit PIN' : 'e.g. 00000'} maxLength={isIndia ? 6 : 10} value={formData.pinCode} onChange={handleChange} error={errors.pinCode} required />
                   </div>
                 </div>
               </div>
@@ -378,6 +407,7 @@ export default function CheckoutPage() {
                         <p className="text-xs font-medium text-[#111111] line-clamp-2 leading-snug">
                           {item.name}
                         </p>
+                        {item.color  && <p className="text-[10px] text-[#6B7280] mt-0.5">Colour: {item.color}</p>}
                         {item.size   && <p className="text-[10px] text-[#6B7280] mt-0.5">Size: {item.size}</p>}
                         {item.length && <p className="text-[10px] text-[#6B7280]">Length: {item.length}</p>}
                         {item.hijab && <p className="text-[10px] text-[#6B7280]">Hijab: {item.hijab}</p>}
@@ -401,10 +431,12 @@ export default function CheckoutPage() {
                       {shipping === 0 ? 'FREE' : formatPrice(shipping)}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-[#6B7280]">Tax ({isIndia ? 'incl.' : 'VAT incl.'})</span>
-                    <span className="font-medium text-[#111111]">{formatPrice(tax)}</span>
-                  </div>
+                  {discount > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span className="text-[#6B7280]">Discount (EMIRATES5)</span>
+                      <span className="font-medium text-green-600">− {formatPrice(discount)}</span>
+                    </div>
+                  )}
                   {codFee > 0 && (
                     <div className="flex justify-between text-sm">
                       <span className="text-[#6B7280]">COD fee</span>
@@ -412,9 +444,33 @@ export default function CheckoutPage() {
                     </div>
                   )}
                   <div className="flex justify-between pt-3 border-t border-[#E5E5E5]">
-                    <span className="font-semibold text-[#111111]">Total</span>
+                    <span className="font-semibold text-[#111111]">Total <span className="font-normal text-gray-400 text-[11px]">(VAT incl.)</span></span>
                     <span className="text-xl font-bold text-[#111111]">{formatPrice(total)}</span>
                   </div>
+                </div>
+
+                {/* Discount code */}
+                <div className="mt-4">
+                  <label htmlFor="checkout-coupon" className="sr-only">Discount code</label>
+                  <div className="flex gap-2">
+                    <input
+                      id="checkout-coupon"
+                      type="text"
+                      value={coupon}
+                      onChange={(e) => { setCoupon(e.target.value); setApplied(false) }}
+                      placeholder={applied ? 'EMIRATES5 applied' : 'Discount code'}
+                      disabled={applied}
+                      className="flex-1 px-3 py-2.5 border border-gray-200 text-sm focus:outline-none focus:border-[#111111] bg-white disabled:bg-gray-50"
+                    />
+                    <button
+                      type="button"
+                      onClick={applyCoupon}
+                      className="px-4 py-2.5 bg-[#111111] text-white text-sm font-medium hover:bg-[#C9A227] hover:text-[#111111] transition-colors"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                  {applied && <p className="text-[11px] text-green-600 mt-1.5">Code applied — AED 25.00 off.</p>}
                 </div>
 
                 {/* Submit */}

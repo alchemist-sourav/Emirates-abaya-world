@@ -100,21 +100,21 @@ export default function ProductCard({ product, className, priority = false }: Pr
             </div>
           )}
 
-          {/* Small "New In" etc. badge — top left */}
+          {/* Small "NEW IN" etc. badge — top left */}
           <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
             {showNew && (
               <span className="bg-[#111111] text-white text-[10px] font-semibold px-2 py-0.5 tracking-wide uppercase leading-none">
-                New In
+                NEW IN
               </span>
             )}
-            {!showNew && showBestseller && (
+            {showBestseller && (
               <span className="bg-[#C9A227] text-[#111111] text-[10px] font-semibold px-2 py-0.5 tracking-wide uppercase leading-none">
-                Bestseller
+                BESTSELLER
               </span>
             )}
-            {!showNew && showSale && discount > 0 && (
+            {showSale && discount > 0 && (
               <span className="bg-red-600 text-white text-[10px] font-semibold px-2 py-0.5 tracking-wide uppercase leading-none">
-                {discount}% OFF
+                SALE
               </span>
             )}
           </div>

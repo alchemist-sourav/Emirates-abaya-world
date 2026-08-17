@@ -6,7 +6,7 @@ export type RegionKey = 'uae' | 'india'
 /**
  * Regional presets that re-skin the storefront (currency, shipping,
  * contacts, addresses, legal text). Switch `ACTIVE_REGION` to toggle
- * between the UAE (default) and India (legacy) storefronts.
+ * between the India (official storefront, Kerala) and UAE storefronts.
  */
 export const REGIONS: Record<RegionKey, SiteConfig> = {
   uae: {
@@ -20,11 +20,14 @@ export const REGIONS: Record<RegionKey, SiteConfig> = {
     currencySymbol: 'AED ',
     locale: 'en-AE',
     priceDecimals: 2,
-    whatsappNumber: '+971 50 123 4567',
+    whatsappNumber: '+91 97477 93814',
+    businessName: 'EMIRATES ABAYA WORLD & BOUTIQUE',
+    phone2: '+91 81299 14915',
+    gst: '32BMXPH3195M1ZD',
     email: 'support@emiratesmodest.com',
-    phone: '+971 4 123 4567',
-    address: 'EMIRATES Atelier, Alserkal Avenue, Al Quoz 1, Dubai, UAE',
-    showroom: 'Flagship Showroom · Alserkal Avenue, Al Quoz 1, Dubai',
+    phone: '+91 81299 14915',
+    address: '10/488/CDEF, GOV: Hospital Karunagappally, Kollam, Kerala - 690518',
+    showroom: 'Emirates Abaya World & Boutique · Karunagappally, Kollam, Kerala',
     supportEmail: 'support@emiratesmodest.com',
     instagram: '@emiratesmodest',
     tagline: 'Bringing bespoke modesty and modern premium abayas to women across the globe. Handcrafted with fine fabrics in the UAE.',
@@ -33,7 +36,7 @@ export const REGIONS: Record<RegionKey, SiteConfig> = {
     phonePattern: '^[0-9+\\-\\s]{7,}$',
     states: ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman', 'Umm Al Quwain', 'Ras Al Khaimah', 'Fujairah'],
     listPriceLabel: '',
-    copyright: '© 2026 EMIRATES. All rights reserved. Handcrafted in Dubai, UAE.',
+    copyright: '© 2026 EMIRATES ABAYA WORLD & BOUTIQUE. All rights reserved.',
     claims: {
       securePayments: true,
       codAvailable: false,
@@ -63,11 +66,14 @@ export const REGIONS: Record<RegionKey, SiteConfig> = {
     currencySymbol: '₹',
     locale: 'en-IN',
     priceDecimals: 0,
-    whatsappNumber: '+91-9876543210',
+    whatsappNumber: '+91 97477 93814',
+    businessName: 'EMIRATES ABAYA WORLD & BOUTIQUE',
+    phone2: '+91 81299 14915',
+    gst: '32BMXPH3195M1ZD',
     email: 'hello@emiratesabayaworld.in',
-    phone: '+91 98765 43210',
-    address: 'Shop 12, Fashion Street, Bandra West, Mumbai – 400050',
-    showroom: '2nd Floor, Fashion Plaza, Linking Road, Mumbai 400052',
+    phone: '+91 81299 14915',
+    address: '10/488/CDEF, GOV: Hospital Karunagappally, Kollam, Kerala - 690518',
+    showroom: 'Emirates Abaya World & Boutique · Karunagappally, Kollam, Kerala',
     supportEmail: 'care@emiratesabayaworld.com',
     instagram: '@emiratesabayaworld',
     tagline: 'Premium abayas and hijabs crafted for modern women, delivered across India.',
@@ -76,7 +82,7 @@ export const REGIONS: Record<RegionKey, SiteConfig> = {
     phonePattern: '^[6-9]\\d{9}$',
     states: INDIAN_STATES,
     listPriceLabel: 'MRP ',
-    copyright: '© 2026 Emirates Abaya World. All rights reserved. Handcrafted with care.',
+    copyright: '© 2026 EMIRATES ABAYA WORLD & BOUTIQUE. All rights reserved.',
     claims: {
       securePayments: true,
       codAvailable: true,
@@ -97,5 +103,5 @@ export const REGIONS: Record<RegionKey, SiteConfig> = {
   },
 }
 
-/** Active storefront region. Toggle to 'india' to restore the legacy storefront. */
-export const ACTIVE_REGION: RegionKey = 'uae'
+/** Active storefront region. The India (Kerala) storefront is the official business. */
+export const ACTIVE_REGION: RegionKey = 'india'

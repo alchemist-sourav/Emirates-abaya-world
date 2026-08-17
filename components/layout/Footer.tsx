@@ -98,17 +98,39 @@ export function Footer() {
               <h3 className="font-heading text-sm font-semibold uppercase tracking-wider text-[#C9A227] mb-5">
                 Connect
               </h3>
+              <p className="text-gray-300 text-sm font-medium mb-3">{config.businessName}</p>
               <ul className="space-y-3">
                 <li>
+                  <address className="text-gray-400 text-sm not-italic leading-relaxed break-words">
+                    10/488/CDEF<br />
+                    GOV: HOSPITAL KARUNAGAPPALLY<br />
+                    KOLLAM, KERALA - 690518
+                  </address>
+                </li>
+                <li className="flex flex-col gap-1">
                   <a
-                    href={`mailto:${config.supportEmail}`}
+                    href="tel:+918129914915"
                     className="text-gray-400 hover:text-white text-sm transition-colors"
                   >
-                    {config.supportEmail}
+                    8129914915
+                  </a>
+                  <a
+                    href="tel:+919747793814"
+                    className="text-gray-400 hover:text-white text-sm transition-colors"
+                  >
+                    9747793814
                   </a>
                 </li>
                 <li>
-                  <span className="text-gray-400 text-sm">{config.showroom}</span>
+                  <span className="text-gray-400 text-sm break-words">GST NO: {config.gst}</span>
+                </li>
+                <li>
+                  <a
+                    href={`mailto:${config.supportEmail}`}
+                    className="text-gray-400 hover:text-white text-sm transition-colors break-all"
+                  >
+                    {config.supportEmail}
+                  </a>
                 </li>
               </ul>
 

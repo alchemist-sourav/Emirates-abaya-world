@@ -27,25 +27,25 @@ export default function NotFound() {
           <p className="text-[10px] tracking-[0.3em] uppercase text-[#C9A227] mb-4">
             Error · 404
           </p>
-          <h1 className="font-heading font-bold text-[110px] lg:text-[200px] leading-none text-[#111111] relative">
+          <h1 className="font-heading font-bold text-[110px] lg:text-[200px] leading-none text-[#F3EFE9] relative select-none">
             404
             <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-24 h-1.5 bg-[#C9A227]" aria-hidden="true" />
           </h1>
-          <p className="font-heading italic text-2xl lg:text-3xl text-[#111111] mt-8">
-            The page you are looking for has moved on.
-          </p>
+          <h2 className="font-heading italic text-2xl lg:text-3xl text-[#111111] mt-6">
+            Page Not Found
+          </h2>
           <p className="text-gray-500 max-w-md mx-auto mt-4 mb-10 text-sm leading-relaxed">
-            Like our most-wanted pieces, this page has been&nbsp;reimagined or relocated. Let us guide you back to
-            the boutique.
+            Like our most-wanted pieces, this page has been reimagined or relocated. Let us guide
+            you back to the boutique.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/" className="inline-flex items-center gap-2 bg-[#111111] text-white text-sm font-semibold px-8 py-3.5 rounded-full hover:bg-[#C9A227] hover:text-[#111111] transition-colors">
+            <Link href="/" className="inline-flex items-center gap-2 bg-[#111111] text-white text-sm font-semibold px-8 py-3.5 rounded-full hover:bg-[#C9A227] hover:text-[#111111] transition-colors uppercase tracking-wider">
               <Home className="h-4 w-4" aria-hidden="true" />
-              Back to Home
+              Back to Homepage
             </Link>
-            <Link href="/shop" className="inline-flex items-center gap-2 border border-[#111111] text-[#111111] text-sm font-semibold px-8 py-3.5 rounded-full hover:bg-[#111111] hover:text-white transition-colors">
+            <Link href="/shop" className="inline-flex items-center gap-2 border border-[#111111] text-[#111111] text-sm font-semibold px-8 py-3.5 rounded-full hover:bg-[#111111] hover:text-white transition-colors uppercase tracking-wider">
               <ShoppingBag className="h-4 w-4" aria-hidden="true" />
-              Explore the Collection
+              Browse Collections
             </Link>
           </div>
         </div>
@@ -55,7 +55,7 @@ export default function NotFound() {
           <div className="flex items-end justify-between mb-8">
             <div>
               <p className="text-[10px] tracking-[0.3em] uppercase text-[#C9A227] mb-2">Browse the boutique</p>
-              <h2 className="font-heading text-2xl lg:text-3xl font-bold text-[#111111]">
+              <h2 className="font-heading italic text-2xl lg:text-3xl font-semibold text-[#111111] uppercase tracking-wider">
                 You may also like
               </h2>
             </div>

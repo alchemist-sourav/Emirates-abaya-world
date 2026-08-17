@@ -13,6 +13,7 @@ export interface CartItem {
   slug: string
   quantity: number
   size?: string
+  color?: string
   length?: string
   hijab?: string
   hijabPrice?: number
@@ -61,6 +62,7 @@ export const useCartStore = create<CartState>()(
                 slug: item.slug,
                 quantity,
                 size: item.size,
+                color: item.color,
                 length: item.length,
                 hijab: item.hijab,
                 hijabPrice: item.hijabPrice,
@@ -95,7 +97,7 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: "emirates-cart-storage",
-      version: 2,
+      version: 3,
       storage: createJSONStorage(() => sessionStorage),
       migrate: (persistedState) => ({
         ...(persistedState as Partial<CartState>),

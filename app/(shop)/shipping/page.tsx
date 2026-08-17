@@ -3,10 +3,9 @@
 import React from 'react'
 import { Truck, Zap, PackageCheck, MapPin, RotateCcw } from 'lucide-react'
 import { SITE_CONFIG } from '@/lib/data/products'
-import { formatPrice } from '@/lib/utils'
 
 const FEE_CARDS = [
-  { icon: Truck, title: 'Free Shipping', desc: `Free delivery across the UAE on orders above ${formatPrice(SITE_CONFIG.freeShippingAbove)}. No hidden charges.` },
+  { icon: Truck, title: 'Complimentary Delivery', desc: `Free delivery across India on orders above ${SITE_CONFIG.currencySymbol}${SITE_CONFIG.freeShippingAbove}. No hidden charges.` },
   { icon: Zap, title: 'Fast Dispatch', desc: 'Orders are dispatched within 24 hours of confirmation, in premium gift packaging.' },
   { icon: PackageCheck, title: 'Careful Packaging', desc: 'Every abaya ships in a protective garment cover and an outer EMIRATES box.' },
 ]
@@ -17,32 +16,45 @@ export default function ShippingPage() {
   const zones = config.shippingZones.map((zone) => {
     const note =
       zone.freeAbove === 0
-        ? 'Free delivery'
+        ? 'Complimentary delivery'
         : zone.freeAbove && zone.freeAbove > 0
-          ? `Free above ${formatPrice(zone.freeAbove)}`
+          ? `Complimentary above ${config.currencySymbol}${zone.freeAbove}`
           : 'Calculated at checkout'
-    return { zone: zone.name, time: zone.transit, cost: formatPrice(zone.fee), note }
+    return { zone: zone.name, time: zone.transit, cost: `${config.currencySymbol}${zone.fee}`, note }
   })
 
   const DELIVERY_STEPS = [
-    { title: 'How long does dispatch take?', body: 'Orders placed before 4 PM GST are dispatched the same day in most cases; otherwise within 24 hours. You will receive email and SMS tracking once your order ships.' },
+    { title: 'How long does dispatch take?', body: 'Orders placed before 4 PM IST are dispatched the same day in most cases; otherwise within 24 hours. You will receive email and SMS tracking once your order ships.' },
     { title: 'Can I track my order?', body: 'Yes. Open My Account → My Orders, or use the tracking link sent to your email and mobile number.' },
-    { title: 'Do you deliver on Fridays and public holidays?', body: 'Dispatch and delivery exclude Fridays and UAE public holidays. Orders placed before a holiday may take 1–2 days longer.' },
+    { title: 'Do you deliver on Sundays and public holidays?', body: 'Dispatch and delivery exclude Sundays and Indian public holidays. Orders placed before a holiday may take 1–2 days longer.' },
     { title: 'Can I change my delivery address?', body: 'Message us on WhatsApp with your order number and the new address within 2 hours of ordering, and we will update it for you.' },
     { title: 'Do you deliver internationally?', body: 'Yes — we ship worldwide with tracked couriers. Duties and taxes are calculated at checkout where applicable.' },
   ]
 
   return (
-    <div className="bg-[#F8F6F2] min-h-screen">
+    <div className="bg-[#FAF7F2] min-h-screen">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
         <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#C9A227] block mb-4 text-center">
           Delivery
         </span>
-        <h1 className="font-heading text-4xl font-bold text-[#111111] mb-4 text-center">Shipping Policy</h1>
+        <h1 className="font-heading italic text-3xl lg:text-4xl font-semibold text-[#111111] mb-5 text-center uppercase tracking-[0.15em]">
+          Shipping &amp; Delivery
+        </h1>
+        <span className="block w-16 h-px bg-[#C9A227] mx-auto mb-6" aria-hidden="true" />
         <p className="text-gray-600 mb-12 max-w-2xl mx-auto text-center">
-          We deliver across the UAE, the GCC and internationally with trusted logistics partners.
-          Here is everything you need to know about receiving your order.
+          We deliver across India and internationally with trusted logistics partners.
+          Delivery is complimentary on all orders above {config.currencySymbol}{config.freeShippingAbove} across India.
         </p>
+
+        {/* Complimentary banner */}
+        <div className="bg-[#111111] text-white rounded-2xl p-6 mb-12 text-center">
+          <p className="font-heading italic text-lg lg:text-xl font-semibold text-[#C9A227] mb-1">
+            Complimentary Shipping
+          </p>
+          <p className="text-sm text-gray-400">
+            Enjoy free UAE delivery on every order of {config.currencySymbol}{config.freeShippingAbove} or more.
+          </p>
+        </div>
 
         {/* Highlight cards */}
         <div className="grid sm:grid-cols-3 gap-4 mb-12">

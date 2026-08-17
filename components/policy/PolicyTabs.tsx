@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { RotateCcw, RefreshCw, Wallet, Timer, MessageCircle, AlertTriangle, ShieldCheck } from 'lucide-react'
+import { RotateCcw, RefreshCw, Wallet, Timer, MessageCircle, AlertTriangle } from 'lucide-react'
 import { SITE_CONFIG } from '@/lib/data/products'
 import { formatPrice } from '@/lib/utils'
 
@@ -11,13 +11,12 @@ const PRIVACY_SECTIONS = [
   { title: 'Information We Collect', body: 'We collect information you provide when placing an order — name, mobile number, email and delivery address. Payment details are processed securely by our payment partners; we never store full card numbers.' },
   { title: 'How We Use Your Information', body: 'Your details are used to process orders, arrange delivery, send order updates and improve your shopping experience. We may send promotional messages only if you opt in.' },
   { title: 'Data Sharing', body: 'We share information only with service providers essential to fulfil your order — logistics partners and payment processors. We never sell your personal data.' },
-  { title: 'Data Security', body: 'All transactions are encrypted. Access to your personal data is restricted to authorised staff who require it to serve you.' },
-  { title: 'Your Rights', body: 'You may request a copy of the data we hold, or ask us to correct or delete it at any time, by contacting our team.' },
-  { title: 'Cookies', body: 'Our store uses cookies to keep your cart and preferences while you browse. You can disable cookies in your browser, though some features may not work as intended.' },
+  { title: 'Data Security', body: 'All transactions are encrypted and access to your personal data is restricted to authorised staff who require it to serve you. Our store uses cookies to keep your cart and preferences while you browse.' },
+  { title: 'Your Rights', body: 'You may request a copy of the data we hold, or ask us to correct or delete it at any time, by contacting our team at support@emiratesmodest.com.' },
 ]
 
 const RETURNS_CARDS = [
-  { icon: RefreshCw, title: 'Easy 7-Day Returns', desc: 'Changed your mind? Request a return within 7 days of delivery.' },
+  { icon: RefreshCw, title: 'Easy 14-Day Returns', desc: 'Changed your mind? Request a return within 14 days of delivery.' },
   { icon: Wallet, title: 'Quick Refunds', desc: 'Refunds are processed within 3–5 business days of the item reaching our atelier.' },
   { icon: RotateCcw, title: 'Free Size Exchange', desc: 'One free exchange per order for your first size swap.' },
 ]
@@ -28,12 +27,12 @@ const ELIGIBILITY = [
   { status: 'Eligible', text: 'Defective stitching, fabric or workmanship at the time of delivery.' },
   { status: 'Not eligible', text: 'Items that are worn, washed, altered or have tags removed.' },
   { status: 'Not eligible', text: 'Made-to-order or bespoke pieces (unless defective).' },
-  { status: 'Not eligible', text: 'Orders where the return request is raised after 7 days of delivery.' },
+  { status: 'Not eligible', text: 'Orders where the return request is raised after 14 days of delivery.' },
 ]
 
 const RETURN_STEPS = [
-  { title: 'Raise a request', body: 'From My Account → My Orders, or message us on WhatsApp with your order number within 7 days of delivery.' },
-  { title: 'Free pickup', body: 'Our courier collects the item from your address in the UAE. No reverse pickup charges for eligible returns.' },
+  { title: 'Raise a request', body: 'From My Account → My Orders, or message us on WhatsApp with your order number within 14 days of delivery.' },
+  { title: 'Free pickup', body: 'Our courier collects the item from your address in India. No reverse pickup charges for eligible returns.' },
   { title: 'Quality check', body: 'We inspect the item within 48 hours of receiving it at the atelier.' },
   { title: 'Refund or exchange', body: 'Once approved, refunds return to your original payment method in 3–5 business days. Exchanges ship within 24 hours.' },
 ]
@@ -48,9 +47,10 @@ export default function PolicyTabs({ defaultTab = 'privacy' }: { defaultTab?: Po
         <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#C9A227] block mb-4 text-center">
           Our Policies
         </span>
-        <h1 className="font-heading text-4xl font-bold text-[#111111] mb-4 text-center">
-          {tab === 'privacy' ? 'Privacy Policy' : 'Returns & Exchanges'}
+        <h1 className="font-heading italic text-3xl lg:text-4xl font-semibold text-[#111111] mb-5 text-center uppercase tracking-[0.15em]">
+          Privacy &amp; Returns
         </h1>
+        <span className="block w-16 h-px bg-[#C9A227] mx-auto mb-6" aria-hidden="true" />
         <p className="text-gray-600 max-w-2xl mx-auto mb-10 text-center">
           {tab === 'privacy'
             ? 'How we collect, use and protect your personal data at EMIRATES.'
@@ -84,13 +84,15 @@ export default function PolicyTabs({ defaultTab = 'privacy' }: { defaultTab?: Po
             <p className="text-gray-500 text-xs mb-8">
               Last updated: {new Date().toLocaleDateString('en-AE', { year: 'numeric', month: 'long', day: 'numeric' })}
             </p>
-            <div className="space-y-6 mb-8">
-              {PRIVACY_SECTIONS.map(({ title, body }) => (
+            <div className="grid sm:grid-cols-2 gap-4 mb-8">
+              {PRIVACY_SECTIONS.map(({ title, body }, i) => (
                 <div key={title} className="bg-white border border-gray-200 rounded-xl p-6">
-                  <h2 className="font-semibold text-[#111111] mb-2 flex items-center gap-2">
-                    <ShieldCheck className="h-4 w-4 text-[#C9A227]" aria-hidden="true" />
-                    {title}
-                  </h2>
+                  <div className="flex items-center gap-3 mb-2.5">
+                    <span className="h-8 w-8 flex-shrink-0 rounded-full bg-[#C9A227] text-[#111111] text-sm font-bold flex items-center justify-center">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <h2 className="font-semibold text-[#111111]">{title}</h2>
+                  </div>
                   <p className="text-sm text-gray-600 leading-relaxed">{body}</p>
                 </div>
               ))}

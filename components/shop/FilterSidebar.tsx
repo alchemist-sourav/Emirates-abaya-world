@@ -54,7 +54,7 @@ function CheckboxGroup({
   selected,
   onChange,
 }: {
-  options: { value: string; label: string }[]
+  options: FilterOptions['categories']
   selected: string[]
   onChange: (values: string[]) => void
 }) {
@@ -63,7 +63,7 @@ function CheckboxGroup({
   }
   return (
     <div className="space-y-2">
-      {options.map(({ value, label }) => (
+      {options.map(({ value, label, count }) => (
         <label key={value} className="flex items-center gap-2.5 cursor-pointer group">
           <input
             type="checkbox"
@@ -72,8 +72,110 @@ function CheckboxGroup({
             className="w-4 h-4 accent-[#111111] cursor-pointer"
           />
           <span className="text-sm text-gray-600 group-hover:text-[#111111] transition-colors">{label}</span>
+          {typeof count === 'number' && (
+            <span className="ml-auto text-[11px] text-gray-400 tabular-nums">{count}</span>
+          )}
         </label>
       ))}
+    </div>
+  )
+}
+
+function ColorSwatchGroup({
+  options,
+  selected,
+  onChange,
+}: {
+  options: FilterOptions['colors']
+  selected: string[]
+  onChange: (values: string[]) => void
+}) {
+  const toggle = (val: string) => {
+    onChange(selected.includes(val) ? selected.filter((v) => v !== val) : [...selected, val])
+  }
+  return (
+    <div className="flex flex-wrap gap-2">
+      {options.map(({ value, label, hex }) => {
+        const active = selected.includes(value)
+        return (
+          <button
+            key={value}
+            type="button"
+            onClick={() => toggle(value)}
+            title={label}
+            aria-pressed={active}
+            aria-label={`Filter by colour ${label}`}
+            className={cn(
+              'relative w-8 h-8 rounded-full border transition-all duration-150',
+              active ? 'border-[#111111] ring-2 ring-[#111111] ring-offset-2 ring-offset-white' : 'border-gray-200 hover:border-[#111111]'
+            )}
+            style={{ backgroundColor: hex ?? '#E5E5E5' }}
+          >
+            {active && (
+              <span
+                className="absolute inset-0 flex items-center justify-center text-[10px] font-bold"
+                style={{ color: ['#111111', '#001F3F', '#800020', '#047857'].includes((hex ?? '').toLowerCase()) ? '#FFFFFF' : '#111111' }}
+                aria-hidden="true"
+              >
+                ✓
+              </span>
+            )}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+function PriceSlider({
+  value,
+  bounds,
+  onChange,
+}: {
+  value: [number, number]
+  bounds: [number, number]
+  onChange: (next: [number, number]) => void
+}) {
+  const [min, max] = bounds
+  const [lo, hi] = value
+  const pct = (v: number) => ((v - min) / Math.max(1, max - min)) * 100
+
+  return (
+    <div>
+      <div className="relative h-1.5 bg-gray-200 rounded-full">
+        <div
+          className="absolute h-1.5 bg-[#111111] rounded-full"
+          style={{ left: `${pct(lo)}%`, right: `${100 - pct(hi)}%` }}
+          aria-hidden="true"
+        />
+      </div>
+      <div className="relative h-5 -mt-5 mb-4">
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={5}
+          value={lo}
+          onChange={(e) => onChange([Math.min(Number(e.target.value), hi), hi])}
+          className="range-input"
+          aria-label="Minimum price"
+        />
+        <input
+          type="range"
+          min={min}
+          max={max}
+          step={5}
+          value={hi}
+          onChange={(e) => onChange([lo, Math.max(Number(e.target.value), lo)])}
+          className="range-input"
+          aria-label="Maximum price"
+        />
+      </div>
+      <div className="flex items-center justify-between text-xs text-[#111111] font-medium">
+        <span className="bg-[#F8F6F2] px-2.5 py-1 border border-gray-200">{formatPrice(lo)}</span>
+        <span className="text-gray-400">–</span>
+        <span className="bg-[#F8F6F2] px-2.5 py-1 border border-gray-200">{formatPrice(hi)}</span>
+      </div>
     </div>
   )
 }
@@ -168,35 +270,11 @@ export function FilterSidebar({ filters, options, priceBounds, onChange, onReset
 
       {/* Price */}
       <FilterSection title={`Price (${SITE_CONFIG.currency})`}>
-        <div className="flex items-center gap-2">
-          <input
-            type="number"
-            value={filters.price[0]}
-            min={priceBounds[0]}
-            onChange={(e) =>
-              onChange({ ...filters, price: [Number(e.target.value), filters.price[1]] })
-            }
-            className="w-full border border-gray-200 px-2 py-1.5 text-sm text-[#111111] focus:outline-none focus:border-[#111111]"
-            placeholder="Min"
-            aria-label="Minimum price"
-          />
-          <span className="text-gray-400 text-sm">–</span>
-          <input
-            type="number"
-            value={filters.price[1]}
-            max={priceBounds[1]}
-            onChange={(e) =>
-              onChange({ ...filters, price: [filters.price[0], Number(e.target.value)] })
-            }
-            className="w-full border border-gray-200 px-2 py-1.5 text-sm text-[#111111] focus:outline-none focus:border-[#111111]"
-            placeholder="Max"
-            aria-label="Maximum price"
-          />
-        </div>
-        <div className="mt-2 flex justify-between text-[11px] text-gray-400">
-          <span>{formatPrice(priceBounds[0])}</span>
-          <span>{formatPrice(priceBounds[1])}</span>
-        </div>
+        <PriceSlider
+          value={filters.price}
+          bounds={priceBounds}
+          onChange={(next) => onChange({ ...filters, price: next })}
+        />
         {priceIsActive && (
           <button
             onClick={() => onChange({ ...filters, price: [priceBounds[0], priceBounds[1]] })}
@@ -210,7 +288,7 @@ export function FilterSidebar({ filters, options, priceBounds, onChange, onReset
       {/* Size */}
       {options && (
         <FilterSection title="Size">
-          <PillGroup
+          <CheckboxGroup
             options={options.sizes}
             selected={filters.sizes}
             onChange={(v) => onChange({ ...filters, sizes: v })}
@@ -232,7 +310,7 @@ export function FilterSidebar({ filters, options, priceBounds, onChange, onReset
       {/* Colour */}
       {options && (
         <FilterSection title="Colour">
-          <CheckboxGroup
+          <ColorSwatchGroup
             options={options.colors}
             selected={filters.colors}
             onChange={(v) => onChange({ ...filters, colors: v })}

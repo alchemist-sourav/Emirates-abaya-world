@@ -26,7 +26,7 @@ function QuickViewContent({ product, onClose }: { product: Product; onClose: () 
   const openDrawer = useCartStore((s) => s.openDrawer)
   const { addItem: addToWishlist, removeItem: removeFromWishlist, hasItem } = useWishlistStore()
 
-  const [size, setSize] = useState<string | null>(null)
+  const [size, setSize] = useState<string | null>(() => product.sizes.find((s) => s.value === 'M')?.value ?? null)
   const [length, setLength] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const cartItemSeq = useRef(0)
@@ -44,7 +44,7 @@ function QuickViewContent({ product, onClose }: { product: Product; onClose: () 
   const isWishlisted = hasItem(product.id)
 
   const handleAdd = () => {
-    if (!size || !length) {
+    if (!size || (product.lengths.length > 0 && !length)) {
       setError('Please select size and length')
       return
     }
@@ -57,8 +57,8 @@ function QuickViewContent({ product, onClose }: { product: Product; onClose: () 
       currency: product.currency,
       image: product.images[0] ?? '',
       slug: product.slug,
-      size,
-      length,
+      size: size ?? undefined,
+      length: length ?? undefined,
       quantity: 1,
     })
     openDrawer()
@@ -163,6 +163,7 @@ function QuickViewContent({ product, onClose }: { product: Product; onClose: () 
             </div>
 
             {/* Length */}
+            {product.lengths.length > 0 && (
             <div>
               <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide block mb-1.5">Length</label>
               <div className="flex flex-wrap gap-1.5">
@@ -181,6 +182,7 @@ function QuickViewContent({ product, onClose }: { product: Product; onClose: () 
                 ))}
               </div>
             </div>
+            )}
 
             {error && <p className="text-xs text-red-500" role="alert">{error}</p>}
 

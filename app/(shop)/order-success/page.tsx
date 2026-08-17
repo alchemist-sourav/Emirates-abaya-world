@@ -12,7 +12,7 @@ function OrderSuccessContent() {
   const orderNumber = searchParams.get('order') ?? ''
   const config = SITE_CONFIG
   const isIndia = config.currency === 'INR'
-  const brand = isIndia ? 'Emirates Abaya World' : 'EMIRATES'
+  const brand = config.businessName
   const deliveryEstimate = isIndia ? '4–7 business days' : '1–3 business days (UAE)'
   const dispatchWindow = isIndia ? '24–48 hours' : '24 hours'
   const whatsappLink = `https://wa.me/${config.whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(

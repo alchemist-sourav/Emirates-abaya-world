@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { getProductBySlug, getRelatedProducts, getProductReviews } from '@/lib/services/products'
 import { ProductDetailClient } from './ProductDetailClient'
 import { ProductGrid } from '@/components/products/ProductGrid'
+import { ProductCarousel } from '@/components/home/ProductCarousel'
 import { ProductReviews } from '@/components/products/ProductReviews'
 import { FloatingReviewsTab } from '@/components/products/FloatingReviewsTab'
 import { RecentlyViewed } from '@/components/home/RecentlyViewed'
@@ -41,19 +41,6 @@ export default async function ProductDetailPage({ params }: Props) {
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-1.5 text-xs text-gray-400 mb-6 flex-wrap" aria-label="Breadcrumb">
-          <Link href="/" className="hover:text-[#111111] transition-colors">Home</Link>
-          <span aria-hidden="true">/</span>
-          <Link href="/shop" className="hover:text-[#111111] transition-colors">Shop</Link>
-          <span aria-hidden="true">/</span>
-          <Link href={`/shop?category=${product.category}`} className="hover:text-[#111111] transition-colors capitalize">
-            {product.category.replace(/-/g, ' ')}
-          </Link>
-          <span aria-hidden="true">/</span>
-          <span className="text-[#111111] line-clamp-1">{product.name}</span>
-        </nav>
-
         {/* Product detail */}
         <ProductDetailClient product={product} />
 
@@ -72,11 +59,16 @@ export default async function ProductDetailPage({ params }: Props) {
               <div>
                 <span className="text-[#C9A227] text-xs font-semibold uppercase tracking-[0.25em] block mb-1">You may also like</span>
                 <h2 id="related-heading" className="font-heading text-2xl font-bold text-[#111111]">
-                  Related Products
+                  You May Also Like
                 </h2>
               </div>
             </div>
-            <ProductGrid products={related} columns={4} />
+            <div className="hidden lg:block">
+              <ProductGrid products={related} columns={4} />
+            </div>
+            <div className="lg:hidden">
+              <ProductCarousel products={related} id="related-mobile" />
+            </div>
           </section>
         )}
 

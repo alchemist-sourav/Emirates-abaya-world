@@ -1,6 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ArrowLeft, ExternalLink, Monitor, Smartphone } from 'lucide-react'
 import { ScaledFrame } from '@/components/presentation/ScaledFrame'
 
 export const metadata = {
@@ -17,6 +17,9 @@ const QUICK_ROUTES = [
   { label: 'Account', href: '/account' },
 ]
 
+const CANVAS_WIDTH = 2030
+const CANVAS_SCALE = 0.6
+
 export default function ComparePage() {
   return (
     <div className="min-h-screen bg-[#FAF7F2]">
@@ -30,7 +33,7 @@ export default function ComparePage() {
               </Link>
               <h1 className="font-heading text-2xl font-bold">EMIRATES* — Compare</h1>
               <p className="text-sm text-gray-400 mt-1">
-                Desktop (1440px) and Mobile (390px) side by side · live previews
+                2030px design canvas — Desktop (1440px) and Mobile (390px) side by side · live previews
               </p>
             </div>
             <nav className="flex flex-wrap gap-2" aria-label="Quick preview routes">
@@ -50,32 +53,55 @@ export default function ComparePage() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        <div className="grid lg:grid-cols-2 gap-12 items-start justify-items-center">
-          <div>
-            <ScaledFrame
-              url="/"
-              viewportWidth={1440}
-              viewportHeight={900}
-              scale={0.62}
-              label="Desktop"
-            />
-            <p className="max-w-md mx-auto text-center text-xs text-gray-500 mt-3">
-              Full-width navigation with the EMIRATES* wordmark, atelier label and gold CLEARANCE SALE link.
-            </p>
+      <main className="py-12 overflow-x-auto">
+        <div className="flex justify-center px-4">
+          <div style={{ width: CANVAS_WIDTH * CANVAS_SCALE, height: (900 + 72) * CANVAS_SCALE }} className="relative">
+            <div
+              className="absolute top-0 left-0 bg-[#E9E3DC] border border-[#E5E5E5] shadow-xl rounded-lg overflow-hidden"
+              style={{
+                width: CANVAS_WIDTH,
+                transform: `scale(${CANVAS_SCALE})`,
+                transformOrigin: 'top left',
+              }}
+            >
+              {/* Canvas toolbar */}
+              <div className="h-10 flex items-center justify-between px-5 bg-[#111111] text-white">
+                <div className="flex items-center gap-2 text-[11px] tracking-wider uppercase">
+                  <Monitor className="h-3.5 w-3.5 text-[#C9A227]" aria-hidden="true" />
+                  Desktop · 1440 × 900
+                  <span className="mx-3 text-gray-500">+</span>
+                  <Smartphone className="h-3.5 w-3.5 text-[#C9A227]" aria-hidden="true" />
+                  Mobile · 390 × 844
+                </div>
+                <span className="text-[11px] text-gray-400">Canvas · 2030 × 940</span>
+              </div>
+
+              {/* Canvas body */}
+              <div className="flex gap-[200px] pt-5 justify-center">
+                <ScaledFrame
+                  url="/"
+                  viewportWidth={1440}
+                  viewportHeight={900}
+                  scale={1}
+                  label="Desktop"
+                />
+                <ScaledFrame
+                  url="/"
+                  viewportWidth={390}
+                  viewportHeight={844}
+                  scale={1}
+                  label="Mobile"
+                />
+              </div>
+            </div>
           </div>
-          <div>
-            <ScaledFrame
-              url="/"
-              viewportWidth={390}
-              viewportHeight={844}
-              scale={0.86}
-              label="Mobile"
-            />
-            <p className="max-w-md mx-auto text-center text-xs text-gray-500 mt-3">
-              Slide-out drawer menu, compact header and bottom navigation for one-handed browsing.
-            </p>
-          </div>
+        </div>
+
+        <div className="max-w-md mx-auto text-center mt-8">
+          <p className="text-xs text-gray-500 leading-relaxed">
+            Full-width navigation with the EMIRATES wordmark, atelier label and gold CLEARANCE SALE
+            link on desktop; a slide-out drawer menu and compact bottom navigation on mobile.
+          </p>
         </div>
       </main>
     </div>

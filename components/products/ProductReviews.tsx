@@ -24,8 +24,9 @@ function StarDisplay({ rating }: { rating: number }) {
 }
 
 export function ProductReviews({ reviews, rating, reviewCount }: ProductReviewsProps) {
+  const denominator = reviews.length > 0 ? reviews.length : reviewCount
   return (
-    <section id="reviews" aria-labelledby="reviews-heading" className="py-12 border-t border-gray-100 scroll-mt-[150px]">
+    <section aria-labelledby="reviews-heading" className="py-12 border-t border-gray-100 scroll-mt-[150px]">
       <h2 id="reviews-heading" className="font-heading text-2xl font-bold text-[#111111] mb-8">
         Customer Reviews
       </h2>
@@ -33,7 +34,7 @@ export function ProductReviews({ reviews, rating, reviewCount }: ProductReviewsP
       {/* Summary */}
       <div className="flex flex-col sm:flex-row gap-8 mb-10">
         <div className="text-center sm:text-left">
-          <p className="font-heading text-5xl font-bold text-[#111111]">{rating}</p>
+          <p className="font-heading text-5xl font-bold text-[#111111]">{rating}/5.0</p>
           <StarDisplay rating={Math.round(rating)} />
           <p className="text-sm text-gray-500 mt-1">{reviewCount} reviews</p>
         </div>
@@ -41,7 +42,7 @@ export function ProductReviews({ reviews, rating, reviewCount }: ProductReviewsP
         <div className="flex-1 space-y-2">
           {[5, 4, 3, 2, 1].map((star) => {
             const count = reviews.filter((r) => r.rating === star).length
-            const pct = reviewCount > 0 ? Math.round((count / reviewCount) * 100) : 0
+            const pct = denominator > 0 ? Math.round((count / denominator) * 100) : 0
             return (
               <div key={star} className="flex items-center gap-3">
                 <span className="text-xs text-gray-600 w-4 text-right">{star}</span>
@@ -81,7 +82,7 @@ export function ProductReviews({ reviews, rating, reviewCount }: ProductReviewsP
                   </div>
                 </div>
                 <time className="text-xs text-gray-400" dateTime={review.createdAt}>
-                  {new Date(review.createdAt).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })}
+                  {new Date(review.createdAt).toLocaleDateString('en-AE', { month: 'long', year: 'numeric' })}
                 </time>
               </div>
               <p className="font-semibold text-[#111111] text-sm mb-2">{review.title}</p>

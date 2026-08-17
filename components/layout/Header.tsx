@@ -90,7 +90,7 @@ export function Header() {
                   <Menu className="h-5 w-5" strokeWidth={1.5} />
                 </button>
                 <span className="hidden md:inline text-[10px] tracking-[0.3em] uppercase text-[#6B7280] font-medium">
-                  Atelier Dubai
+                  Boutique Kerala
                 </span>
               </div>
 

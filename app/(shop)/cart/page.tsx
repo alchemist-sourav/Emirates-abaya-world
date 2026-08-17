@@ -2,18 +2,22 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ShoppingBag, ArrowLeft } from 'lucide-react'
+import { ShoppingBag, ArrowLeft, Truck } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
 import { CartItemRow } from '@/components/cart/CartItem'
 import { CartSummary } from '@/components/cart/CartSummary'
 import { ProductGrid } from '@/components/products/ProductGrid'
 import { getBestSellers, getProductsByOccasion } from '@/lib/services/products'
+import { SITE_CONFIG } from '@/lib/data/products'
+import { formatPrice } from '@/lib/utils'
 import type { Product } from '@/types/product'
 
 export default function CartPage() {
   const { items, clearCart, getSubtotal, getItemCount } = useCartStore()
   const subtotal = getSubtotal()
   const count = getItemCount()
+  const remaining = Math.max(0, SITE_CONFIG.freeShippingAbove - subtotal)
+  const progress = Math.min(100, (subtotal / SITE_CONFIG.freeShippingAbove) * 100)
 
   const [recommendations, setRecommendations] = useState<Product[]>([])
 
@@ -31,7 +35,7 @@ export default function CartPage() {
       <div className="bg-white border-b border-gray-100 py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="font-heading text-2xl lg:text-3xl font-bold text-[#111111]">
-            Shopping Cart
+            Your Cart{count > 0 ? ` (${count})` : ''}
           </h1>
           {count > 0 && (
             <p className="text-gray-500 text-sm mt-1">{count} {count === 1 ? 'item' : 'items'} in your cart</p>
@@ -47,7 +51,7 @@ export default function CartPage() {
               Your cart is empty
             </h2>
             <p className="text-gray-500 text-base mb-8 max-w-sm mx-auto">
-              Discover our collection of premium abayas and hijabs delivered across India.
+              Discover our collection of premium abayas and hijabs, handcrafted in Kerala and delivered across India and worldwide.
             </p>
             <Link
               href="/shop"
@@ -80,6 +84,33 @@ export default function CartPage() {
                 </div>
               </div>
 
+              {/* Free shipping progress */}
+              {count > 0 && (
+                <div className="bg-white border border-[#E5E5E5] mt-4 p-4">
+                  {remaining > 0 ? (
+                    <p className="text-[11px] text-[#6B7280] mb-2 flex items-center gap-1.5">
+                      <Truck className="h-3.5 w-3.5 text-[#C9A227] flex-shrink-0" aria-hidden="true" />
+                      Add <span className="font-semibold text-[#111111] mx-0.5">{formatPrice(remaining)}</span> more for <span className="font-semibold text-green-600 ml-0.5">FREE shipping</span>
+                    </p>
+                  ) : (
+                    <p className="text-[11px] text-green-600 mb-2 flex items-center gap-1.5 font-semibold">
+                      <Truck className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+                      You qualify for FREE shipping!
+                    </p>
+                  )}
+                  <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[#C9A227] rounded-full transition-all duration-500"
+                      style={{ width: `${progress}%` }}
+                      role="progressbar"
+                      aria-valuenow={Math.round(progress)}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                    />
+                  </div>
+                </div>
+              )}
+
               {/* Continue shopping */}
               <div className="mt-4">
                 <Link
@@ -102,7 +133,7 @@ export default function CartPage() {
 
             {/* Summary */}
             <div className="lg:sticky lg:top-[150px]">
-              <CartSummary subtotal={subtotal} />
+              <CartSummary subtotal={subtotal} itemCount={count} />
               <div className="mt-4 bg-[#F8F6F2] border border-[#E5E5E5] p-4">
                 <p className="text-xs text-[#6B7280] leading-relaxed">
                   <span className="font-semibold text-[#111111]">Complete your look:</span> add a matching hijab to any abaya on the product page and pay together in one delivery.

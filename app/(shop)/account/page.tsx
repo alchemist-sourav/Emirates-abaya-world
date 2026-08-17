@@ -2,15 +2,17 @@
 
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Package, Heart, MapPin, MessageCircle, ChevronRight, Star, Wallet } from 'lucide-react'
 import { useWishlistStore } from '@/store/wishlist'
-import { SITE_CONFIG } from '@/lib/data/products'
+import { SITE_CONFIG, PRODUCTS } from '@/lib/data/products'
 import { formatPrice } from '@/lib/utils'
+import type { Product } from '@/types/product'
 
 const RECENT_ORDERS = [
-  { id: 'EM-10482', date: 'Aug 08, 2026', items: 2, total: 1180, status: 'Delivered' },
-  { id: 'EM-10449', date: 'Jul 21, 2026', items: 1, total: 450, status: 'Delivered' },
-  { id: 'EM-10396', date: 'Jul 03, 2026', items: 3, total: 1740, status: 'In Transit' },
+  { id: 'EM-10482', date: 'Aug 08, 2026', productIds: ['abaya-embroidered-gold', 'hijab-pearl-ivory'], total: 1180, status: 'Delivered' },
+  { id: 'EM-10449', date: 'Jul 21, 2026', productIds: ['abaya-slip-dress'], total: 450, status: 'Delivered' },
+  { id: 'EM-10396', date: 'Jul 03, 2026', productIds: ['abaya-emerald-luxury', 'abaya-modern-navy', 'hijab-silk-beige'], total: 1740, status: 'In Transit' },
 ]
 
 const STATUS_STYLES: Record<string, string> = {
@@ -25,6 +27,10 @@ const QUICK_LINKS = [
   { label: 'Shipping Address', desc: 'Manage your delivery addresses', href: '/account/addresses', icon: MapPin },
   { label: 'Contact Support', desc: 'We typically reply within 24 hours', href: '/contact', icon: MessageCircle },
 ]
+
+function productById(id: string): Product | undefined {
+  return PRODUCTS.find((p) => p.id === id)
+}
 
 export default function AccountPage() {
   const wishlistCount = useWishlistStore((s) => s.items.length)
@@ -88,7 +94,7 @@ export default function AccountPage() {
                 <tr className="text-left text-xs uppercase tracking-wider text-gray-500 border-b border-gray-100">
                   <th className="px-6 py-3">Order</th>
                   <th className="px-6 py-3">Date</th>
-                  <th className="px-6 py-3 text-center">Items</th>
+                  <th className="px-6 py-3">Products</th>
                   <th className="px-6 py-3 text-right">Total</th>
                   <th className="px-6 py-3 text-right">Status</th>
                 </tr>
@@ -98,7 +104,24 @@ export default function AccountPage() {
                   <tr key={order.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 font-semibold text-[#111111]">{order.id}</td>
                     <td className="px-6 py-4 text-gray-600">{order.date}</td>
-                    <td className="px-6 py-4 text-center text-gray-600">{order.items}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center">
+                        <div className="flex -space-x-2">
+                          {order.productIds.slice(0, 3).map((pid) => {
+                            const p = productById(pid)
+                            if (!p) return null
+                            return (
+                              <span key={pid} className="h-9 w-9 rounded-full border-2 border-white overflow-hidden relative inline-block bg-[#F3EFE9]">
+                                <Image src={p.images[0]} alt={p.name} fill className="object-cover" sizes="36px" />
+                              </span>
+                            )
+                          })}
+                        </div>
+                        <span className="ml-3 text-xs text-gray-500">
+                          {order.productIds.length} {order.productIds.length === 1 ? 'item' : 'items'}
+                        </span>
+                      </div>
+                    </td>
                     <td className="px-6 py-4 text-right font-semibold text-[#111111]">{formatPrice(order.total)}</td>
                     <td className="px-6 py-4 text-right">
                       <span className={`text-[10px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full ${STATUS_STYLES[order.status] ?? 'bg-gray-100 text-gray-600'}`}>
@@ -126,11 +149,11 @@ export default function AccountPage() {
             </div>
             <p className="text-sm font-semibold text-[#111111]">Fatima M. Almansouri</p>
             <p className="text-sm text-gray-600 mt-1 leading-relaxed">
-              Villa 12, Al Wasl Road<br />
-              Jumeirah 1, Dubai<br />
-              United Arab Emirates
+              House 10/488, CDEF<br />
+              Karunagappally, Kollam<br />
+              Kerala - 690518
             </p>
-            <p className="text-xs text-gray-500 mt-2">05X XXX XXXX</p>
+            <p className="text-xs text-gray-500 mt-2">98XXX XXXXX</p>
           </div>
           <div className="bg-white border border-gray-200 rounded-2xl p-6">
             <div className="flex items-center justify-between mb-3">
@@ -142,12 +165,27 @@ export default function AccountPage() {
                 View all
               </Link>
             </div>
-            <p className="font-heading text-2xl font-bold text-[#111111]">{wishlistCount}</p>
-            <p className="text-sm text-gray-600 mt-1">
-              {wishlistCount > 0
-                ? 'Saved pieces waiting for the perfect moment.'
-                : 'No saved pieces yet. Browse the collection to start your wishlist.'}
-            </p>
+            {wishlistCount > 0 ? (
+              <>
+                <div className="flex -space-x-3 mb-3">
+                  {useWishlistStore.getState().items.slice(0, 5).map((item) => (
+                    <Link key={item.productId ?? item.id} href={`/products/${item.slug}`} className="h-12 w-12 rounded-full border-2 border-white overflow-hidden relative inline-block bg-[#F3EFE9] hover:border-[#C9A227] transition-colors">
+                      <Image src={item.image} alt={item.name} fill className="object-cover" sizes="48px" />
+                    </Link>
+                  ))}
+                </div>
+                <p className="text-sm text-gray-600">
+                  {wishlistCount} saved {wishlistCount === 1 ? 'piece' : 'pieces'} waiting for the perfect moment.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="font-heading text-2xl font-bold text-[#111111]">{wishlistCount}</p>
+                <p className="text-sm text-gray-600 mt-1">
+                  No saved pieces yet. Browse the collection to start your wishlist.
+                </p>
+              </>
+            )}
           </div>
         </div>
 

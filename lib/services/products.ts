@@ -6,6 +6,8 @@ export { POPULAR_SEARCHES }
 export interface FilterOption {
   value: string
   label: string
+  count?: number
+  hex?: string
 }
 
 export interface FilterOptions {
@@ -26,16 +28,28 @@ export async function getFilterOptions(): Promise<FilterOptions> {
   )
 
   const fabrics = [...new Set(PRODUCTS.map((p) => p.fabric))]
+
+  // Colour names → hex map (first product that declares the colour wins)
+  const colorHex = new Map<string, string>()
+  for (const p of PRODUCTS) {
+    for (const c of p.colors ?? []) {
+      if (!colorHex.has(c.name)) colorHex.set(c.name, c.hex)
+    }
+  }
   const colors = [...new Set(PRODUCTS.flatMap((p) => p.colors?.map((c) => c.name) ?? [p.color]))]
 
   return {
-    categories: CATEGORIES.filter((c) => c.isActive).map((c) => ({ value: c.slug, label: c.name })),
+    categories: CATEGORIES.filter((c) => c.isActive).map((c) => ({
+      value: c.slug,
+      label: c.name,
+      count: PRODUCTS.filter((p) => p.category === c.slug).length,
+    })),
     occasions: OCCASIONS.map((o) => ({ value: o.slug, label: o.name })),
     collections: COLLECTIONS.map((c) => ({ value: c.slug, label: c.name })),
-    sizes: STANDARD_SIZES.map((s) => ({ value: s.value, label: s.label })),
+    sizes: STANDARD_SIZES.filter((s) => s.value !== '2XL').map((s) => ({ value: s.value, label: s.label })),
     lengths: STANDARD_LENGTHS.map((l) => ({ value: l.value, label: l.label })),
     fabrics: fabrics.map((f) => ({ value: f, label: f })),
-    colors: colors.map((c) => ({ value: c, label: c })),
+    colors: colors.map((c) => ({ value: c, label: c, hex: colorHex.get(c) })),
     priceBounds,
   }
 }

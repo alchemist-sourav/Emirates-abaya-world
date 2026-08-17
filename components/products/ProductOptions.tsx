@@ -3,12 +3,15 @@
 import React from 'react'
 import { cn } from '@/lib/utils'
 import { formatPrice } from '@/lib/utils'
-import type { SizeOption, LengthOption, HijabOption } from '@/types/product'
+import type { SizeOption, LengthOption, HijabOption, ColorOption } from '@/types/product'
 
 interface ProductOptionsProps {
   sizes: SizeOption[]
   lengths: LengthOption[]
   hijabOptions: HijabOption[]
+  colors?: ColorOption[]
+  selectedColor?: string | null
+  onColorChange?: (id: string) => void
   selectedSize: string | null
   selectedLength: string | null
   selectedHijab: string | null
@@ -54,6 +57,9 @@ export function ProductOptions({
   sizes,
   lengths,
   hijabOptions,
+  colors,
+  selectedColor,
+  onColorChange,
   selectedSize,
   selectedLength,
   selectedHijab,
@@ -64,9 +70,54 @@ export function ProductOptions({
   errors,
 }: ProductOptionsProps) {
   const selectedSizeLabel = sizes.find((s) => s.value === selectedSize)?.label ?? ''
+  const selectedColorObj = colors?.find((c) => c.id === selectedColor) ?? null
 
   return (
     <div className="space-y-6">
+      {/* Colour */}
+      {colors && colors.length > 0 && (
+        <div>
+          <label className="text-sm font-semibold text-[#111111] block mb-2.5">
+            Colour
+            {selectedColorObj && (
+              <span className="ml-2 font-normal text-gray-500">: {selectedColorObj.name}</span>
+            )}
+          </label>
+          <div className="flex flex-wrap items-center gap-2.5">
+            {colors.map((color) => {
+              const selected = selectedColor === color.id
+              return (
+                <button
+                  key={color.id}
+                  type="button"
+                  onClick={() => onColorChange?.(color.id)}
+                  aria-pressed={selected}
+                  aria-label={`Colour ${color.name}`}
+                  title={color.name}
+                  className={cn(
+                    'relative w-9 h-9 rounded-full border transition-all duration-150',
+                    selected
+                      ? 'border-[#111111] ring-2 ring-[#111111] ring-offset-2 ring-offset-white'
+                      : 'border-gray-200 hover:border-[#111111]'
+                  )}
+                  style={{ backgroundColor: color.hex }}
+                >
+                  {selected && (
+                    <span
+                      className="absolute inset-0 flex items-center justify-center text-[10px] font-bold"
+                      style={{ color: ['#111111', '#001F3F', '#800020', '#047857'].includes(color.hex.toLowerCase()) ? '#FFFFFF' : '#111111' }}
+                      aria-hidden="true"
+                    >
+                      ✓
+                    </span>
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Size */}
       <div>
         <div className="flex items-center justify-between mb-2.5">
@@ -103,6 +154,7 @@ export function ProductOptions({
       </div>
 
       {/* Length v/s Height — dropdown */}
+      {lengths.length > 0 && (
       <div>
         <label className="text-sm font-semibold text-[#111111] block mb-2.5">
           Length v/s Height
@@ -137,6 +189,7 @@ export function ProductOptions({
           <p className="mt-2 text-xs text-red-500" role="alert">{errors.length}</p>
         )}
       </div>
+      )}
 
       {/* Matching Hijab */}
       <div>

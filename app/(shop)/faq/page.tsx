@@ -2,59 +2,59 @@
 
 import React, { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { ChevronDown, Search, Package, RotateCcw, CreditCard, Truck, Ruler, MessageCircle, Scissors, X } from 'lucide-react'
+import { ChevronDown, Search, Package, RotateCcw, Truck, Ruler, Shirt, X } from 'lucide-react'
 import { SITE_CONFIG } from '@/lib/data/products'
 
-const TOPICS = ['All', 'Orders & Shipping', 'Returns & Exchanges', 'Payments', 'Sizing & Fit', 'Bespoke']
+const TOPICS = ['All Questions', 'Orders & Sizing', 'Shipping UAE & Global', 'Atelier Returns', 'Fabric & Material Care']
 
 const FAQS = [
   {
-    topic: 'Orders & Shipping',
+    topic: 'Shipping UAE & Global',
     icon: Truck,
     q: 'How long does delivery take?',
-    a: 'Orders are dispatched within 24 hours and delivered across the UAE in 1–3 business days, GCC in 3–7 days and internationally in 7–15 days. You will receive tracking by email and SMS the moment your order ships.',
+    a: 'Orders are dispatched within 24 hours and delivered across India in 3–5 business days, with metro cities often faster. You will receive tracking by email and SMS the moment your order ships.',
   },
   {
-    topic: 'Orders & Shipping',
+    topic: 'Shipping UAE & Global',
     icon: Package,
     q: 'How do I track my order?',
     a: 'Go to My Account → My Orders and open your latest order, or use the tracking link sent to your email and mobile number once your order ships.',
   },
   {
-    topic: 'Returns & Exchanges',
+    topic: 'Shipping UAE & Global',
+    icon: Truck,
+    q: 'Do you deliver internationally?',
+    a: 'Yes — we ship worldwide with tracked couriers. Duties and taxes are calculated at checkout where applicable. The shipping page lists current delivery fees and timelines for every zone.',
+  },
+  {
+    topic: 'Atelier Returns',
     icon: RotateCcw,
     q: 'What is your return policy?',
-    a: 'We offer free 7-day returns on unworn items with tags intact, plus one free size exchange per order. Refunds are processed within 3–5 business days after the item reaches our atelier.',
+    a: 'We offer 14-day returns on unworn items with tags intact, plus one free size exchange per order. Refunds are processed within 3–5 business days after the item reaches our atelier. See our Privacy & Returns page for full details.',
   },
   {
-    topic: 'Payments',
-    icon: CreditCard,
-    q: 'Which payment methods do you accept?',
-    a: 'We accept all major cards (Visa, Mastercard, Amex), Apple Pay, bank transfer and Cash on Delivery across the UAE. Card payments are securely processed and we never store your card details.',
-  },
-  {
-    topic: 'Sizing & Fit',
+    topic: 'Orders & Sizing',
     icon: Ruler,
     q: 'How do I choose my size and length?',
-    a: 'Each product page lists sizes (XS–XXL) and lengths (52–60 inches). For a perfect fit, check the size guide on the product page, or message us your height on WhatsApp and our stylists will recommend a length.',
+    a: 'Each product page lists sizes (XS–2XL) and available lengths. For a perfect fit, check the size guide on the product page, or message us your height on WhatsApp and our stylists will recommend a length.',
   },
   {
-    topic: 'Sizing & Fit',
+    topic: 'Orders & Sizing',
     icon: Ruler,
     q: 'Do you offer custom lengths?',
     a: 'Yes. Every EMIRATES abaya is cut in-house, so we can adjust length for a modest fitting. Select “Custom Length” on the product page or tell us on WhatsApp and we will confirm the details.',
   },
   {
-    topic: 'Bespoke',
-    icon: Scissors,
-    q: 'Do you take bespoke or made-to-order pieces?',
-    a: 'Yes — our atelier takes a limited number of bespoke orders each month for brides, Eid and special occasions. Contact us on WhatsApp with your measurements and we will share a quote within 24 hours.',
-  },
-  {
-    topic: 'Orders & Shipping',
-    icon: MessageCircle,
+    topic: 'Orders & Sizing',
+    icon: Shirt,
     q: 'Can I cancel or change my order?',
     a: 'Orders can be changed or cancelled within 2 hours of placing them, as long as the piece has not entered production. Message us on WhatsApp with your order number and we will do our best to help.',
+  },
+  {
+    topic: 'Fabric & Material Care',
+    icon: Shirt,
+    q: 'How do I care for my abaya fabric?',
+    a: 'Our crepes, georgettes and silks are best dry-cleaned. Store your abaya on a padded hanger in the protective garment cover it ships in, and avoid direct sun. Each piece includes a fabric care tag with full instructions.',
   },
 ]
 
@@ -83,9 +83,10 @@ export default function FaqPage() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
         <div className="text-center mb-10">
           <span className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#C9A227] block mb-4">
-            Need Help?
+            Customer Care
           </span>
-          <h1 className="font-heading text-4xl font-bold text-[#111111] mb-4">Frequently Asked Questions</h1>
+          <h1 className="font-heading italic text-4xl lg:text-5xl font-semibold text-[#111111] mb-5">Frequently Asked Questions</h1>
+          <span className="block w-16 h-px bg-[#C9A227] mx-auto mb-6" aria-hidden="true" />
           <p className="text-gray-600">Quick answers to the questions we hear most often.</p>
         </div>
 
@@ -162,17 +163,14 @@ export default function FaqPage() {
         )}
 
         <div className="bg-[#111111] text-white rounded-2xl p-8 text-center">
-          <p className="font-heading text-lg font-bold mb-1">Still have questions?</p>
-          <p className="text-sm text-gray-400 mb-5">We reply on WhatsApp within a few hours.</p>
-          <a
-            href={`https://wa.me/${SITE_CONFIG.whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent('Hi! I have a question about your abayas.')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-[#C9A227] text-[#111111] text-sm font-semibold px-7 py-3.5 rounded-full hover:bg-white transition-colors"
+          <p className="font-heading italic text-xl font-semibold mb-1">Still have questions?</p>
+          <p className="text-sm text-gray-400 mb-6">Our customer care team replies within 24 hours.</p>
+          <Link
+            href="/contact"
+            className="inline-flex items-center gap-2 bg-[#C9A227] text-[#111111] text-sm font-semibold px-8 py-3.5 rounded-full hover:bg-white transition-colors uppercase tracking-wider"
           >
-            <MessageCircle className="h-4 w-4" aria-hidden="true" />
-            Chat on WhatsApp
-          </a>
+            Contact Customer Care
+          </Link>
           <p className="text-xs text-gray-500 mt-5">
             Or email <a href={`mailto:${SITE_CONFIG.supportEmail}`} className="underline">{SITE_CONFIG.supportEmail}</a>
           </p>

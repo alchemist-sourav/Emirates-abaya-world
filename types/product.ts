@@ -92,6 +92,12 @@ export interface SiteConfig {
   /** Number of decimals to show for prices */
   priceDecimals: number
   whatsappNumber: string
+  /** Official registered business name, e.g. "EMIRATES ABAYA WORLD & BOUTIQUE" */
+  businessName: string
+  /** Secondary / alternate phone number */
+  phone2: string
+  /** GST registration number (India) */
+  gst: string
   email: string
   phone: string
   address: string

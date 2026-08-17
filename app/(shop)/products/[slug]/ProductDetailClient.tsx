@@ -45,7 +45,9 @@ function Accordion({ title, children, defaultOpen = false }: { title: string; ch
 
 export function ProductDetailClient({ product }: Props) {
   const router = useRouter()
-  const [selectedSize, setSelectedSize] = useState<string | null>(null)
+  const defaultSize = product.sizes.find((s) => s.value === 'M')?.value ?? null
+  const [selectedColor, setSelectedColor] = useState<string | null>(product.colors?.[0]?.id ?? null)
+  const [selectedSize, setSelectedSize] = useState<string | null>(defaultSize)
   const [selectedLength, setSelectedLength] = useState<string | null>(null)
   const [selectedHijab, setSelectedHijab] = useState<string | null>('none')
   const [quantity, setQuantity] = useState(1)
@@ -77,7 +79,7 @@ export function ProductDetailClient({ product }: Props) {
   const validate = () => {
     const errs: { size?: string; length?: string } = {}
     if (!selectedSize) errs.size = 'Please select a size'
-    if (!selectedLength) errs.length = 'Please select a length'
+    if (product.lengths.length > 0 && !selectedLength) errs.length = 'Please select a length'
     setErrors(errs)
     return Object.keys(errs).length === 0
   }
@@ -94,6 +96,7 @@ export function ProductDetailClient({ product }: Props) {
       image: product.images[0] ?? '',
       slug: product.slug,
       size: selectedSize ?? undefined,
+      color: selectedColor ? product.colors?.find((c) => c.id === selectedColor)?.name : undefined,
       length: selectedLength ?? undefined,
       hijab: selectedHijabObj?.id !== 'none' ? selectedHijabObj?.name : undefined,
       hijabPrice: hijabPrice > 0 ? hijabPrice : undefined,
@@ -241,6 +244,9 @@ export function ProductDetailClient({ product }: Props) {
           sizes={product.sizes}
           lengths={product.lengths}
           hijabOptions={product.hijabOptions}
+          colors={product.colors}
+          selectedColor={selectedColor}
+          onColorChange={setSelectedColor}
           selectedSize={selectedSize}
           selectedLength={selectedLength}
           selectedHijab={selectedHijab}
@@ -300,7 +306,7 @@ export function ProductDetailClient({ product }: Props) {
             disabled={outOfStock}
             className={cn(
               'w-full py-3.5 font-semibold text-sm tracking-wide uppercase rounded-full transition-colors',
-              outOfStock ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#D4956A] text-white hover:bg-[#C98557]'
+              outOfStock ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#111111] text-white hover:bg-[#C9A227] hover:text-[#111111]'
             )}
           >
             {outOfStock ? 'Out of Stock' : 'Add to Cart'}
@@ -311,7 +317,7 @@ export function ProductDetailClient({ product }: Props) {
               type="button"
               onClick={handleBuyNow}
               disabled={outOfStock}
-              className="py-3.5 bg-[#111111] text-white font-semibold text-sm tracking-wide rounded-full hover:bg-[#C9A227] hover:text-[#111111] transition-colors disabled:opacity-40"
+              className="py-3.5 bg-[#D4956A] text-white font-semibold text-sm tracking-wide rounded-full hover:bg-[#C98557] transition-colors disabled:opacity-40"
             >
               Buy Now
             </button>
@@ -319,7 +325,7 @@ export function ProductDetailClient({ product }: Props) {
               type="button"
               onClick={handleWhatsApp}
               disabled={outOfStock}
-              className="py-3.5 border border-[#25D366] text-[#128C4A] font-semibold text-sm rounded-full hover:bg-[#eefaf2] transition-colors disabled:opacity-40"
+              className="py-3.5 border border-gray-300 text-[#111111] font-semibold text-sm rounded-full hover:bg-gray-50 transition-colors disabled:opacity-40"
             >
               WhatsApp Order
             </button>
@@ -356,18 +362,27 @@ export function ProductDetailClient({ product }: Props) {
           <Accordion title="Description" defaultOpen>
             {product.description}
           </Accordion>
-          <Accordion title="Fabric">
+          <Accordion title="Fabric & Care">
             <p>Fabric: {product.fabric}</p>
             <p className="mt-1">Colour: {product.color}</p>
+            <p className="mt-2">Dry clean recommended. Steam iron on low heat inside out. Store folded in a breathable garment bag to preserve the fabric and embellishments.</p>
           </Accordion>
-          <Accordion title="Care Instructions">
-            Dry clean recommended. Steam iron on low heat inside out. Store folded in a breathable garment bag to preserve the fabric and embellishments.
-          </Accordion>
-          <Accordion title="Shipping">
+          <Accordion title="Shipping Info" defaultOpen>
             Dispatched within 24–48 hours. {config.claims.freeShipping ? `Free shipping above ${formatPrice(config.freeShippingAbove)}, ` : ''}otherwise a flat shipping fee applies. {config.claims.codAvailable ? 'Cash on Delivery available.' : ''}
           </Accordion>
           <Accordion title="Returns">
             Easy 14-day return &amp; exchange. Items must be unused, with tags attached. See our Return &amp; Exchange Policy for details.
+          </Accordion>
+          <Accordion title={`Reviews (${product.reviewCount})`}>
+            <p className="mb-3">
+              Rated <span className="font-semibold text-[#111111]">{product.rating.toFixed(1)}/5.0</span> by {product.reviewCount} verified customers.
+            </p>
+            <a
+              href="#reviews"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#111111] border-b border-[#111111] pb-0.5 hover:text-[#C9A227] hover:border-[#C9A227] transition-colors"
+            >
+              Read all reviews
+            </a>
           </Accordion>
         </div>
       </div>
@@ -380,24 +395,16 @@ export function ProductDetailClient({ product }: Props) {
     <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-[#E5E5E5] px-3 py-2.5 shadow-[0_-2px_12px_rgba(0,0,0,0.06)]">
       <div className="flex items-center gap-3">
         <div className="flex-1 min-w-0">
-          <p className="text-lg font-bold text-[#C9A227] leading-none">{formatPrice(product.price + hijabPrice)}</p>
-          <p className="text-[11px] text-gray-500 leading-tight mt-0.5">VAT included</p>
+          <p className="text-lg font-bold text-[#C9A227] leading-none">{formatPrice(totalPrice)}</p>
+          <p className="text-[11px] text-gray-500 leading-tight mt-0.5">{quantity > 1 ? `${quantity} items · ` : ''}VAT included</p>
         </div>
         <button
           type="button"
           onClick={handleAddToCart}
           disabled={outOfStock}
-          className="flex-1 py-3 bg-[#111111] text-white text-[13px] font-semibold tracking-wide hover:bg-[#000000] transition-colors disabled:opacity-50"
+          className="flex-1 py-3 bg-[#111111] text-white text-[13px] font-semibold tracking-wide rounded-full hover:bg-[#000000] transition-colors disabled:opacity-50"
         >
           ADD TO CART
-        </button>
-        <button
-          type="button"
-          onClick={handleBuyNow}
-          disabled={outOfStock}
-          className="flex-1 py-3 bg-[#C9A227] text-[#111111] text-[13px] font-semibold tracking-wide hover:bg-[#D4AF37] transition-colors disabled:opacity-50"
-        >
-          BUY NOW
         </button>
       </div>
     </div>
