@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { SITE_CONFIG } from '@/lib/data/products'
 
 interface LogoProps {
   className?: string
@@ -10,7 +9,7 @@ interface LogoProps {
 }
 
 /**
- * EMIRATES* wordmark — refined uppercase serif with a raised gold asterisk.
+ * EMIRATES wordmark — refined uppercase serif.
  */
 export function Logo({ className, size = 'md', light = false, withSubline = true }: LogoProps) {
   return (
@@ -19,34 +18,26 @@ export function Logo({ className, size = 'md', light = false, withSubline = true
       className={cn('inline-flex flex-col items-center group', className)}
       aria-label="EMIRATES — Home"
     >
-      <span className="flex items-start leading-none">
-        <span
-          className={cn(
-            'font-heading font-bold uppercase tracking-[0.22em] transition-colors',
-            size === 'md' ? 'text-[26px]' : 'text-[15px]',
-            light ? 'text-white' : 'text-[#111111]'
-          )}
-        >
-          Emirates
-        </span>
-        <span
-          className={cn(
-            'relative font-heading font-bold text-[#C9A227] transition-colors group-hover:text-[#D4956A]',
-            size === 'md' ? '-top-1.5 text-xl' : '-top-1 text-xs'
-          )}
-          aria-hidden="true"
-        >
-          *
-        </span>
+      <span
+        className={cn(
+          'font-bold uppercase transition-colors leading-none',
+          size === 'md' ? 'text-xl sm:text-[28px]' : 'text-[16px]',
+          light ? 'text-white' : 'text-[#111111]'
+        )}
+        style={{ fontFamily: "'Times New Roman MT', 'Times New Roman', Times, serif", fontWeight: '900', letterSpacing: '0.08em', textShadow: '0.4px 0 0 currentColor, -0.4px 0 0 currentColor' }}
+      >
+        Emirates
       </span>
       {withSubline && (
         <span
           className={cn(
-            'mt-1.5 text-[8px] tracking-[0.34em] uppercase font-medium',
-            light ? 'text-gray-400' : 'text-[#6B7280]'
+            'mt-0.5 font-sans font-medium uppercase',
+            size === 'md' ? 'text-[8.5px] sm:text-[9.5px]' : 'text-[7.5px]',
+            light ? 'text-white/60' : 'text-[#111111]'
           )}
+          style={{ letterSpacing: '0.45em', textIndent: '0.45em', textTransform: 'lowercase' }}
         >
-          {SITE_CONFIG.regionLabel}
+          abaya world
         </span>
       )}
     </Link>

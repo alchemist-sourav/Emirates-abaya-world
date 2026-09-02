@@ -1,6 +1,6 @@
 import React from 'react'
 import type { Metadata } from 'next'
-import { Playfair_Display, Inter } from 'next/font/google'
+import { Playfair_Display, Inter, Great_Vibes } from 'next/font/google'
 import { ToasterProvider } from '@/components/ui/ToasterProvider'
 import './globals.css'
 
@@ -13,6 +13,13 @@ const playfair = Playfair_Display({
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
+  display: 'swap',
+})
+
+const greatVibes = Great_Vibes({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-great-vibes',
   display: 'swap',
 })
 
@@ -52,7 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${playfair.variable} ${inter.variable} font-sans antialiased bg-[#FAF7F2] text-[#111111] min-h-screen`}
+        className={`${playfair.variable} ${inter.variable} ${greatVibes.variable} font-sans antialiased bg-[#FAF7F2] text-[#111111] min-h-screen`}
       >
         {children}
         {/* ToasterProvider is a Client Component — safe to render from Server layout */}

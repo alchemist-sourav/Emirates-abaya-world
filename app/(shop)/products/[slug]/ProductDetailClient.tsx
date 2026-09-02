@@ -317,9 +317,16 @@ export function ProductDetailClient({ product }: Props) {
               type="button"
               onClick={handleBuyNow}
               disabled={outOfStock}
-              className="py-3.5 bg-[#D4956A] text-white font-semibold text-sm tracking-wide rounded-full hover:bg-[#C98557] transition-colors disabled:opacity-40"
+              className="py-3.5 bg-[#D4956A] text-white font-semibold text-sm tracking-wide rounded-full hover:bg-[#C98557] transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
             >
-              Buy Now
+              <span>Buy Now</span>
+              {/* GPay icon */}
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 24" className="h-5 w-auto" aria-hidden="true">
+                <text y="18" fontSize="14" fontWeight="700" fontFamily="Arial,sans-serif" fill="#fff" opacity="0.9">G</text>
+                <text x="13" y="18" fontSize="14" fontWeight="400" fontFamily="Arial,sans-serif" fill="#fff" opacity="0.9">Pay</text>
+              </svg>
+              {/* PhonePe icon circle */}
+              <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-white/20 text-white text-[9px] font-black leading-none">Pe</span>
             </button>
             <button
               type="button"
@@ -329,6 +336,30 @@ export function ProductDetailClient({ product }: Props) {
             >
               WhatsApp Order
             </button>
+          </div>
+
+          {/* ── Secure Payment Strip ── */}
+          <div className="rounded-xl border border-[#E8E4DF] bg-[#FAFAF9] px-4 py-3">
+            <p className="text-center text-[9px] font-bold uppercase tracking-[0.22em] text-[#6B7280] mb-2.5">
+              🔒 100% Safe &amp; Secure Checkout
+            </p>
+            <div className="flex items-center justify-center gap-2.5 flex-wrap">
+              {/* Visa */}
+              <svg viewBox="0 0 52 16" className="h-5" aria-label="Visa"><rect width="52" height="16" rx="3" fill="#1A1F71"/><text x="5" y="12" fontSize="11" fontWeight="800" fontFamily="Arial,sans-serif" fill="#FFD700" letterSpacing="1">VISA</text></svg>
+              {/* Mastercard */}
+              <svg viewBox="0 0 36 24" className="h-5" aria-label="Mastercard"><circle cx="13" cy="12" r="10" fill="#EB001B"/><circle cx="23" cy="12" r="10" fill="#F79E1B"/><path d="M18 5.5a10 10 0 0 1 0 13A10 10 0 0 1 18 5.5z" fill="#FF5F00"/></svg>
+              {/* Paytm */}
+              <span className="inline-flex items-center px-2 py-0.5 rounded bg-[#002970] text-white text-[9px] font-black tracking-wide">Paytm</span>
+              {/* PhonePe */}
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-[#5F259F] text-white text-[9px] font-black tracking-wide">PhonePe</span>
+              {/* GPay */}
+              <span className="inline-flex items-center gap-0.5 text-[11px] font-bold text-[#4285F4]">
+                <span className="text-[#EA4335]">G</span><span className="text-[#34A853]">P</span><span className="text-[#FBBC05]">a</span><span className="text-[#4285F4]">y</span>
+              </span>
+              {/* UPI */}
+              <span className="inline-flex items-center px-2 py-0.5 rounded bg-[#097939] text-white text-[9px] font-black tracking-widest">UPI</span>
+            </div>
+            <p className="text-center text-[8.5px] text-[#9CA3AF] mt-2 tracking-wide">Powered by <span className="font-bold text-[#072654]">Razorpay</span></p>
           </div>
 
           <button

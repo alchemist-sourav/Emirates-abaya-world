@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   ShoppingBag, Heart, Search, Menu, X,
-  User, Store, ChevronRight, LayoutGrid
+  User, ChevronRight
 } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
 import { useWishlistStore } from '@/store/wishlist'
@@ -25,6 +25,7 @@ const PRIMARY_NAV = [
 ]
 
 const DRAWER_PRIMARY = [
+  { label: 'Home', href: '/' },
   { label: 'Abayas', href: '/shop?category=abayas' },
   { label: 'Abaya Dresses', href: '/shop?category=abayas&subcategory=modern' },
   { label: 'Hijabs', href: '/shop?category=hijabs' },
@@ -79,9 +80,9 @@ export function Header() {
         {/* ── Header ── */}
         <header>
           <div className="site-container">
-            <div className="flex items-center justify-between h-20">
-              {/* Left: hamburger + ATELIER DUBAI */}
-              <div className="flex items-center gap-3 w-1/3">
+            <div className="flex items-center justify-between h-16 sm:h-20">
+              {/* Left: hamburger */}
+              <div className="flex items-center gap-3 flex-1">
                 <button
                   onClick={() => setMobileOpen(true)}
                   className="w-10 h-10 flex items-center justify-center hover:bg-gray-50 rounded-full transition-colors"
@@ -89,34 +90,31 @@ export function Header() {
                 >
                   <Menu className="h-5 w-5" strokeWidth={1.5} />
                 </button>
-                <span className="hidden md:inline text-[10px] tracking-[0.3em] uppercase text-[#6B7280] font-medium">
-                  Boutique Kerala
-                </span>
               </div>
 
               {/* Center: EMIRATES* logo */}
-              <div className="w-1/3 flex justify-center">
+              <div className="flex justify-center flex-none">
                 <Logo />
               </div>
 
               {/* Right: icons */}
-              <div className="flex items-center justify-end gap-1 sm:gap-2 w-1/3">
-                <button onClick={openSearch} className="p-2 text-[#111111] hover:text-[#C9A227] transition-colors flex items-center" aria-label="Search">
-                  <Search className="h-[22px] w-[22px]" strokeWidth={1.4} />
+              <div className="flex items-center justify-end gap-0 flex-1">
+                <button onClick={openSearch} className="p-1.5 text-[#111111] hover:text-[#C9A227] transition-colors flex items-center" aria-label="Search">
+                  <Search className="h-[20px] w-[20px]" strokeWidth={1.4} />
                 </button>
-                <Link href="/account" className="hidden sm:flex p-2 text-[#111111] hover:text-[#C9A227] transition-colors items-center" aria-label="Account">
-                  <User className="h-[22px] w-[22px]" strokeWidth={1.4} />
+                <Link href="/account" className="hidden sm:flex p-1.5 text-[#111111] hover:text-[#C9A227] transition-colors items-center" aria-label="Account">
+                  <User className="h-[20px] w-[20px]" strokeWidth={1.4} />
                 </Link>
-                <Link href="/wishlist" className="relative p-2 text-[#111111] hover:text-[#C9A227] transition-colors flex items-center" aria-label={`Wishlist${isMounted && wishlistCount > 0 ? `, ${wishlistCount} items` : ''}`}>
-                  <Heart className="h-[22px] w-[22px]" strokeWidth={1.4} />
+                <Link href="/wishlist" className="relative p-1.5 text-[#111111] hover:text-[#C9A227] transition-colors flex items-center" aria-label={`Wishlist${isMounted && wishlistCount > 0 ? `, ${wishlistCount} items` : ''}`}>
+                  <Heart className="h-[20px] w-[20px]" strokeWidth={1.4} />
                   {isMounted && wishlistCount > 0 && (
                     <span className="absolute top-0.5 right-0.5 h-4 w-4 flex items-center justify-center bg-[#DC2626] text-white text-[9px] font-bold rounded-full">
                       {wishlistCount > 9 ? '9+' : wishlistCount}
                     </span>
                   )}
                 </Link>
-                <Link href="/cart" className="relative p-2 text-[#111111] hover:text-[#C9A227] transition-colors flex items-center" aria-label={`Cart${isMounted && cartCount > 0 ? `, ${cartCount} items` : ''}`}>
-                  <ShoppingBag className="h-[22px] w-[22px]" strokeWidth={1.4} />
+                <Link href="/cart" className="relative p-1.5 text-[#111111] hover:text-[#C9A227] transition-colors flex items-center" aria-label={`Cart${isMounted && cartCount > 0 ? `, ${cartCount} items` : ''}`}>
+                  <ShoppingBag className="h-[20px] w-[20px]" strokeWidth={1.4} />
                   {isMounted && cartCount > 0 && (
                     <span className="absolute top-0.5 right-0.5 h-4 w-4 flex items-center justify-center bg-[#111111] text-white text-[9px] font-bold rounded-full">
                       {cartCount > 9 ? '9+' : cartCount}
@@ -160,29 +158,6 @@ export function Header() {
           </div>
         </header>
 
-        {/* ── Mobile Header Row ── */}
-        <div className="lg:hidden">
-          <div className="flex items-center justify-between h-14 px-4 bg-white border-t border-[#F0EEEC]">
-            <div className="flex items-center gap-2">
-              <Link href="/" aria-label="EMIRATES — Home">
-                <Logo size="sm" withSubline={false} />
-              </Link>
-            </div>
-            <div className="flex items-center gap-1">
-              <button onClick={openSearch} className="w-9 h-9 flex items-center justify-center hover:bg-gray-50 rounded" aria-label="Search">
-                <Search className="h-5 w-5" strokeWidth={1.4} />
-              </button>
-              <Link href="/cart" className="relative w-9 h-9 flex items-center justify-center hover:bg-gray-50 rounded" aria-label={`Cart${isMounted && cartCount > 0 ? `, ${cartCount} items` : ''}`}>
-                <ShoppingBag className="h-5 w-5" strokeWidth={1.4} />
-                {isMounted && cartCount > 0 && (
-                  <span className="absolute top-0.5 right-0.5 h-4 w-4 flex items-center justify-center bg-[#111111] text-white text-[9px] font-bold rounded-full">
-                    {cartCount > 9 ? '9+' : cartCount}
-                  </span>
-                )}
-              </Link>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* ── Slide-Out Navigation Drawer (all viewports) ── */}
@@ -266,42 +241,7 @@ export function Header() {
         </div>
       </div>
 
-      {/* ── Mobile Bottom Navigation ── */}
-      <nav className={cn(
-        'fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-white border-t border-[#E5E5E5] pb-safe',
-        pathname.startsWith('/products/') || pathname.startsWith('/product/') ? 'hidden' : 'block'
-      )} aria-label="Bottom navigation">
-        <div className="flex items-stretch h-14">
-          {[
-            { href: '/', icon: Store, label: 'Home' },
-            { href: '/shop', icon: LayoutGrid, label: 'Shop' },
-            { href: '/wishlist', icon: Heart, label: 'Wishlist', badge: isMounted ? wishlistCount : 0 },
-            { href: '/cart', icon: ShoppingBag, label: 'Cart', badge: isMounted ? cartCount : 0 },
-            { href: '/account', icon: User, label: 'Account' },
-          ].map(({ href, icon: Icon, label, badge }) => {
-            const isActive = pathname === href || (href !== '/' && pathname.startsWith(href))
-            return (
-              <Link
-                key={href}
-                href={href}
-                className={cn(
-                  'relative flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium transition-colors',
-                  isActive ? 'text-[#C9A227]' : 'text-[#6B7280] hover:text-[#111111]'
-                )}
-                aria-current={isActive ? 'page' : undefined}
-              >
-                <Icon className="h-5 w-5" strokeWidth={1.5} />
-                {badge !== undefined && badge > 0 && (
-                  <span className="absolute top-1 right-1/2 -translate-x-1/2 h-4 w-4 flex items-center justify-center bg-[#DC2626] text-white text-[8px] font-bold rounded-full">
-                    {badge > 9 ? '9+' : badge}
-                  </span>
-                )}
-                {label}
-              </Link>
-            )
-          })}
-        </div>
-      </nav>
+
     </>
   )
 }

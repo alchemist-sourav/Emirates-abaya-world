@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowRight, Star, Quote } from 'lucide-react'
+import { ArrowRight, Star, Quote, ChevronDown } from 'lucide-react'
 import { ProductGrid } from '@/components/products/ProductGrid'
 import { ProductCarousel } from '@/components/home/ProductCarousel'
 import { RecentlyViewed } from '@/components/home/RecentlyViewed'
@@ -167,23 +167,26 @@ export default async function HomePage() {
           />
         </div>
         <div className="hero-inner">
-          <div className="hero-content">
-            <span className="font-heading italic text-[13px] lg:text-sm tracking-[0.35em] uppercase text-[#C9A227]">
-              New Collection
-            </span>
-            <h1>Modest Fashion, Redefined</h1>
-            <p>
-              Handcrafted abayas, abaya dresses and hijabs from the heart of Kerala —
-              tailored for the modern woman who moves gracefully through every occasion.
-            </p>
-            <Link href="/shop?tag=new" className="hero-cta">
-              SHOP NOW
+          <div className="hero-content-centered">
+            <h1 className="hero-title-cursive">emirates</h1>
+            <span className="hero-subtitle-collections">COLLECTIONS</span>
+            <Link href="/shop?tag=new" className="hero-cta-minimal">
+              shop now
+              <ChevronDown className="hero-arrow-down h-5 w-5" aria-hidden="true" />
             </Link>
           </div>
         </div>
         <span className="absolute bottom-2 right-3 lg:right-8 font-heading font-bold text-[64px] lg:text-[160px] leading-none text-white/[0.06] tracking-[0.15em] select-none pointer-events-none" aria-hidden="true">
           EMIRATES
         </span>
+      </section>
+
+      {/* ═══════════ 3. THE LATEST DESIGNS — carousel ═══════════ */}
+      <section className="py-10 lg:py-14 bg-[#F9F6F2]" aria-labelledby="latest-heading">
+        <div className="site-container">
+          <SectionHeader eyebrow="Just landed" title="The Latest Designs!" href="/shop?tag=new" />
+          <ProductCarousel products={newArrivals} id="latest-carousel" />
+        </div>
       </section>
 
       {/* ═══════════ 2. SHOP THE COLLECTIONS — Abayas + Dresses ═══════════ */}
@@ -194,14 +197,6 @@ export default async function HomePage() {
             <EditorialBanner image={abayasImage ?? heroImage} eyebrow="The Signature" title="Abayas" description="Timeless silhouettes, handcrafted in Kerala for the modern woman." href="/shop?category=abayas" tall />
             <EditorialBanner image={dressesImage} eyebrow="The New Edit" title="Abaya Dresses" description="Modern occasion pieces that move beautifully from day to night." href="/shop?category=abayas&subcategory=modern" tall />
           </div>
-        </div>
-      </section>
-
-      {/* ═══════════ 3. THE LATEST DESIGNS — carousel ═══════════ */}
-      <section className="py-10 lg:py-14 bg-[#F9F6F2]" aria-labelledby="latest-heading">
-        <div className="site-container">
-          <SectionHeader eyebrow="Just landed" title="The Latest Designs!" href="/shop?tag=new" />
-          <ProductCarousel products={newArrivals} id="latest-carousel" />
         </div>
       </section>
 

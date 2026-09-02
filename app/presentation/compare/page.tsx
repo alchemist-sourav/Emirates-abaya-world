@@ -100,7 +100,7 @@ export default function ComparePage() {
         <div className="max-w-md mx-auto text-center mt-8">
           <p className="text-xs text-gray-500 leading-relaxed">
             Full-width navigation with the EMIRATES wordmark, atelier label and gold CLEARANCE SALE
-            link on desktop; a slide-out drawer menu and compact bottom navigation on mobile.
+            link on desktop; and a clean top header and slide-out drawer menu on mobile.
           </p>
         </div>
       </main>
