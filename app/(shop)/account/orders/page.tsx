@@ -31,7 +31,7 @@ export default function OrdersPage() {
   const STATUS_NOTES = [
     { icon: HelpCircle, title: 'Where is my tracking number?', body: 'Tracking details appear on this page and in your email once your order is shipped (usually within 24 hours of placing it).' },
     { icon: Truck, title: 'How long does delivery take?', body: isIndia ? 'Most orders are delivered within 4–7 business days across India. Metro cities are typically faster.' : 'Orders reach UAE addresses in 1–3 business days, the GCC in 3–7 days and internationally in 7–15 days.' },
-    { icon: CheckCircle2, title: 'My order is stuck?', body: 'If your order has not moved for 3+ days, chat with us on WhatsApp and we will resolve it within 24 hours.' },
+    { icon: CheckCircle2, title: 'My order is stuck?', body: 'If your order has not moved for 3+ days, contact us at support@emiratesmodest.com and we will resolve it within 24 hours.' },
   ]
 
   return (

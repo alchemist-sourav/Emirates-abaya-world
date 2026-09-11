@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
-import { ShopClient } from './ShopClient'
+import ShopClient from './ShopClient'
 import { ProductGridSkeleton } from '@/components/ui/Skeleton'
 
 export const metadata: Metadata = {
@@ -8,7 +8,15 @@ export const metadata: Metadata = {
   description: 'Browse our complete collection of premium abayas, hijabs and modest fashion.',
 }
 
-export default function ShopPage() {
+async function getShopData() {
+  const products = await import('@/lib/services/products').then((mod) => mod.getProducts())
+  const filterOptions = await import('@/lib/services/products').then((mod) => mod.getFilterOptions())
+  return { products: await products, filterOptions: await filterOptions }
+}
+
+export default async function ShopPage() {
+  const { products, filterOptions } = await getShopData()
+
   return (
     <Suspense
       fallback={
@@ -25,7 +33,7 @@ export default function ShopPage() {
         </div>
       }
     >
-      <ShopClient />
+      <ShopClient products={products} filterOptions={filterOptions} />
     </Suspense>
   )
 }

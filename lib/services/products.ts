@@ -215,3 +215,26 @@ export async function createOrder(orderData: Record<string, unknown>): Promise<{
   const orderNumber = `EAW-${Math.random().toString(36).slice(2, 8).toUpperCase()}`
   return { orderId, orderNumber }
 }
+
+// Mapping from mock product IDs (used in UI) to Supabase product UUIDs
+// This allows the frontend to work with readable IDs while using real DB UUIDs
+const MOCK_TO_SUPABASE_MAP: Record<string, string> = {
+  'abaya-classic-black': 'p1000000-0000-0000-0000-000000000001',
+  'abaya-modern-navy': 'p1000000-0000-0000-0000-000000000002',
+  'abaya-emerald-luxury': 'p1000000-0000-0000-0000-000000000003',
+  'abaya-casual-gray': 'p1000000-0000-0000-0000-000000000004',
+  'abaya-prayer-sand': 'p1000000-0000-0000-0000-000000000005',
+  'hijab-silk-beige': 'p1000000-0000-0000-0000-000000000006',
+  'hijab-pearl-ivory': 'p1000000-0000-0000-0000-000000000007',
+  'hijab-cotton-sand': 'p1000000-0000-0000-0000-000000000008',
+}
+
+// Convert a mock product ID to a Supabase UUID
+export function mockIdToSupabaseId(mockId: string): string {
+  return MOCK_TO_SUPABASE_MAP[mockId] || mockId
+}
+
+// Convert cart item productId from mock format to Supabase UUID format
+export function translateCartProductId(productId: string): string {
+  return mockIdToSupabaseId(productId)
+}

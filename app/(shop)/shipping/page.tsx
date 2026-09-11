@@ -27,7 +27,7 @@ export default function ShippingPage() {
     { title: 'How long does dispatch take?', body: 'Orders placed before 4 PM IST are dispatched the same day in most cases; otherwise within 24 hours. You will receive email and SMS tracking once your order ships.' },
     { title: 'Can I track my order?', body: 'Yes. Open My Account → My Orders, or use the tracking link sent to your email and mobile number.' },
     { title: 'Do you deliver on Sundays and public holidays?', body: 'Dispatch and delivery exclude Sundays and Indian public holidays. Orders placed before a holiday may take 1–2 days longer.' },
-    { title: 'Can I change my delivery address?', body: 'Message us on WhatsApp with your order number and the new address within 2 hours of ordering, and we will update it for you.' },
+    { title: 'Can I change my delivery address?', body: 'Email us with your order number and the new address within 2 hours of ordering, and we will update it for you.' },
     { title: 'Do you deliver internationally?', body: 'Yes — we ship worldwide with tracked couriers. Duties and taxes are calculated at checkout where applicable.' },
   ]
 
@@ -125,9 +125,7 @@ export default function ShippingPage() {
         <div className="flex items-start gap-3 bg-white border border-gray-200 rounded-xl p-6">
           <MapPin className="h-5 w-5 text-[#C9A227] mt-0.5 flex-shrink-0" aria-hidden="true" />
           <p className="text-sm text-gray-600">
-            For delivery queries, reach us at{' '}
-            <a href={`tel:${config.whatsappNumber.replace(/[^\d+]/g, '')}`} className="text-[#111111] underline">{config.whatsappNumber}</a>{' '}
-            or email{' '}
+            For delivery queries, call client care at +91 81299 14915 or email{' '}
             <a href={`mailto:${config.supportEmail}`} className="text-[#111111] underline">{config.supportEmail}</a>.
           </p>
         </div>

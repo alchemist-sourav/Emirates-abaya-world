@@ -7,6 +7,7 @@ import { Heart, ShoppingBag, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useWishlistStore } from '@/store/wishlist'
 import { useCartStore } from '@/store/cart'
+import { translateCartProductId } from '@/lib/services/products'
 import { formatPrice } from '@/lib/utils'
 
 export default function WishlistPage() {
@@ -19,7 +20,7 @@ export default function WishlistPage() {
     cartItemSeq.current += 1
     addToCart({
       id: `${item.productId}-${cartItemSeq.current}`,
-      productId: item.productId,
+      productId: translateCartProductId(item.productId),
       name: item.name,
       price: item.price,
       currency: item.currency,

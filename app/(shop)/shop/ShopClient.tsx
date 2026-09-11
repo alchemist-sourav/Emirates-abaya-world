@@ -10,7 +10,6 @@ import { ProductGridSkeleton } from '@/components/ui/Skeleton'
 import { FilterSidebar, type FilterState } from '@/components/shop/FilterSidebar'
 import { MobileFilters } from '@/components/shop/MobileFilters'
 import { SortSelect } from '@/components/shop/SortSelect'
-import { getProducts, getFilterOptions, type FilterOptions } from '@/lib/services/products'
 import type { Product } from '@/types/product'
 import { cn } from '@/lib/utils'
 
@@ -37,13 +36,13 @@ function defaultFilters(bounds: [number, number], categories: string[] = []): Fi
 function sortProducts(products: Product[], sort: string): Product[] {
   const copy = [...products]
   switch (sort) {
-    case 'newest':       return copy.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-    case 'price-asc':    return copy.sort((a, b) => a.price - b.price)
-    case 'price-desc':   return copy.sort((a, b) => b.price - a.price)
-    case 'best-rated':   return copy.sort((a, b) => b.rating - a.rating)
-    case 'popularity':
-    case 'best-selling': return copy.sort((a, b) => b.reviewCount - a.reviewCount)
-    default:             return copy.sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0) || b.rating - a.rating)
+    case 'newest': return copy.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    case 'price-asc': return copy.sort((a, b) => a.price - b.price)
+    case 'price-desc': return copy.sort((a, b) => b.price - a.price)
+    case 'best-rated': return copy.sort((a, b) => b.rating - a.rating)
+    case 'best-selling':
+    case 'popularity': return copy.sort((a, b) => b.reviewCount - a.reviewCount)
+    default: return copy.sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0) || b.rating - a.rating)
   }
 }
 
@@ -61,15 +60,20 @@ function useIsDesktop() {
   return isDesktop
 }
 
-export function ShopClient() {
+type ShopClientProps = {
+  products: Product[]
+  filterOptions: import('@/lib/services/products').FilterOptions | null
+}
+
+export default function ShopClient({ products, filterOptions }: ShopClientProps) {
   const searchParams = useSearchParams()
-  const [allProducts, setAllProducts] = useState<Product[]>([])
-  const [options, setOptions] = useState<FilterOptions | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
   const [sort, setSort] = useState('featured')
   const [page, setPage] = useState(1)
   const [mobileCount, setMobileCount] = useState(PAGE_SIZE)
-  const [filters, setFilters] = useState<FilterState>(defaultFilters(DEFAULT_PRICE_BOUNDS))
+  const [filters, setFilters] = useState<FilterState>(() => {
+    const catFromUrl = searchParams.get('category')
+    return defaultFilters(DEFAULT_PRICE_BOUNDS, catFromUrl ? [catFromUrl] : [])
+  })
   const isDesktop = useIsDesktop()
 
   // URL params
@@ -80,33 +84,22 @@ export function ShopClient() {
   const collection = searchParams.get('collection')
   const occasion = searchParams.get('occasion')
 
+  // Sync filters from URL
   useEffect(() => {
-    let cancelled = false
-    Promise.all([getProducts(), getFilterOptions()]).then(([products, opts]) => {
-      if (cancelled) return
-      setAllProducts(products)
-      setOptions(opts)
-      // Respect the URL category on first load
-      setFilters(defaultFilters(opts.priceBounds, category ? [category] : []))
-      setIsLoading(false)
-    })
-    return () => { cancelled = true }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // Keep filters in sync when URL category changes (URL is an external system)
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setFilters((prev) => {
-      const cats = category ? [category] : []
-      return { ...prev, categories: cats }
-    })
+    ;(typeof requestAnimationFrame !== 'undefined'
+      ? requestAnimationFrame
+      : setTimeout)(() => {
+        setFilters((prev) => {
+          const cats = category ? [category] : []
+          return { ...prev, categories: cats }
+        })
+      })
   }, [category])
 
-  const priceBounds = options?.priceBounds ?? DEFAULT_PRICE_BOUNDS
+  const priceBounds = filterOptions?.priceBounds ?? DEFAULT_PRICE_BOUNDS
 
   const filtered = useMemo(() => {
-    let p = allProducts
+    let p = [...products]
 
     // URL-driven search
     if (q && q.trim().length >= 2) {
@@ -146,7 +139,7 @@ export function ShopClient() {
     if (filters.offersOnly) p = p.filter((x) => x.isOnSale)
 
     return sortProducts(p, sort)
-  }, [allProducts, filters, sort, q, sale, tag, collection, occasion, priceBounds])
+  }, [products, filters, sort, q, sale, tag, collection, occasion, priceBounds])
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
   const desktopPage = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
@@ -179,7 +172,7 @@ export function ShopClient() {
     sale === 'true' ? 'Deals & Offers'
     : tag === 'new' ? 'New Arrivals'
     : collection === 'luxury' ? 'Luxury Collection'
-    : occasion ? (options?.occasions.find((o) => o.value === occasion)?.label ?? occasion.charAt(0).toUpperCase() + occasion.slice(1))
+    : occasion ? (filterOptions?.occasions.find((o) => o.value === occasion)?.label ?? occasion.charAt(0).toUpperCase() + occasion.slice(1))
     : q ? `Results for "${q}"`
     : category === 'abayas' ? 'Abayas'
     : categoryTitle || 'Abayas'
@@ -188,7 +181,7 @@ export function ShopClient() {
     sale === 'true' ? 'Deals & Offers'
     : tag === 'new' ? 'New Arrivals'
     : collection === 'luxury' ? 'Luxury Collection'
-    : occasion ? (options?.occasions.find((o) => o.value === occasion)?.label ?? occasion.charAt(0).toUpperCase() + occasion.slice(1))
+    : occasion ? (filterOptions?.occasions.find((o) => o.value === occasion)?.label ?? occasion.charAt(0).toUpperCase() + occasion.slice(1))
     : q ? `Results for "${q}"`
     : 'Abayas Collection'
 
@@ -226,7 +219,7 @@ export function ShopClient() {
           </h1>
           <p className="text-white/75 text-sm mt-3 max-w-xl mx-auto">{subtitle}</p>
           <p className="text-[#C9A227] text-[12px] mt-4 font-medium tracking-wide">
-            {isLoading ? 'Loading…' : `${filtered.length} ${filtered.length === 1 ? 'product' : 'products'}`}
+            {filtered.length} {filtered.length === 1 ? 'product' : 'products'}
           </p>
         </div>
       </div>
@@ -237,7 +230,7 @@ export function ShopClient() {
           <div className="flex items-center gap-3">
             <MobileFilters
               filters={filters}
-              options={options}
+              options={filterOptions}
               priceBounds={priceBounds}
               sort={sort}
               onChange={handleFiltersChange}
@@ -260,7 +253,7 @@ export function ShopClient() {
           {/* Desktop filter sidebar */}
           <FilterSidebar
             filters={filters}
-            options={options}
+            options={filterOptions}
             priceBounds={priceBounds}
             onChange={handleFiltersChange}
             onReset={handleReset}
@@ -270,15 +263,11 @@ export function ShopClient() {
 
           {/* Grid */}
           <div className="flex-1 min-w-0">
-            {isLoading ? (
-              <ProductGridSkeleton count={9} />
-            ) : displayed.length === 0 ? (
+            {filtered.length === 0 ? (
               <div className="py-20 text-center bg-white border border-[#E5E5E5]">
                 <p className="text-xl text-[#111111] mb-2">No products found</p>
                 <p className="text-[#6B7280] text-sm mb-6">Try adjusting or clearing your filters</p>
-                <button onClick={handleReset} className="btn-primary btn-sm">
-                  Clear Filters
-                </button>
+                <button onClick={handleReset} className="btn-primary btn-sm">Clear Filters</button>
               </div>
             ) : (
               <>
@@ -314,9 +303,7 @@ export function ShopClient() {
                         aria-current={page === n ? 'page' : undefined}
                         className={cn(
                           'w-10 h-10 flex items-center justify-center text-sm font-medium border transition-colors rounded-full',
-                          page === n
-                            ? 'bg-[#111111] text-white border-[#111111]'
-                            : 'border-gray-300 text-[#111111] hover:border-[#111111]'
+                          n === page ? 'bg-[#111111] text-white border-[#111111]' : 'border-gray-300 text-[#111111] hover:border-[#111111]'
                         )}
                       >
                         {n}

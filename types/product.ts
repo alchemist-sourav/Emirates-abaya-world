@@ -91,7 +91,6 @@ export interface SiteConfig {
   locale: string
   /** Number of decimals to show for prices */
   priceDecimals: number
-  whatsappNumber: string
   /** Official registered business name, e.g. "EMIRATES ABAYA WORLD & BOUTIQUE" */
   businessName: string
   /** Secondary / alternate phone number */

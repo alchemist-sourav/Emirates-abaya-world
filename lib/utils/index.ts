@@ -38,3 +38,16 @@ export function discountPercent(originalPrice?: number, price?: number): number 
   if (!originalPrice || !price || originalPrice <= price) return 0
   return Math.round(((originalPrice - price) / originalPrice) * 100)
 }
+
+/** Returns the currently active storefront currency code (e.g. "INR", "AED") */
+export function getActiveCurrency(): string {
+  return SITE_CONFIG.currency
+}
+
+/** Returns the currency symbol for the active storefront (e.g. "₹", "AED ") */
+export function currencySymbol(currency?: string): string {
+  if (currency) {
+    return currency === 'INR' ? '₹' : currency === 'AED' ? 'AED ' : `${currency} `
+  }
+  return SITE_CONFIG.currencySymbol
+}

@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { RotateCcw, RefreshCw, Wallet, Timer, MessageCircle, AlertTriangle } from 'lucide-react'
+import { RotateCcw, RefreshCw, Wallet, Timer, Mail, AlertTriangle } from 'lucide-react'
 import { SITE_CONFIG } from '@/lib/data/products'
 import { formatPrice } from '@/lib/utils'
 
@@ -31,7 +31,7 @@ const ELIGIBILITY = [
 ]
 
 const RETURN_STEPS = [
-  { title: 'Raise a request', body: 'From My Account → My Orders, or message us on WhatsApp with your order number within 14 days of delivery.' },
+  { title: 'Raise a request', body: 'From My Account → My Orders, or message us at support@emiratesmodest.com with your order number within 14 days of delivery.' },
   { title: 'Free pickup', body: 'Our courier collects the item from your address in India. No reverse pickup charges for eligible returns.' },
   { title: 'Quality check', body: 'We inspect the item within 48 hours of receiving it at the atelier.' },
   { title: 'Refund or exchange', body: 'Once approved, refunds return to your original payment method in 3–5 business days. Exchanges ship within 24 hours.' },
@@ -153,13 +153,11 @@ export default function PolicyTabs({ defaultTab = 'privacy' }: { defaultTab?: Po
             </div>
 
             <a
-              href={`https://wa.me/${config.whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent('Hi! I would like to raise a return request for my order.')}`}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={`mailto:${config.supportEmail}?subject=Return Request`}
               className="inline-flex items-center gap-2 text-sm text-[#111111] underline hover:text-[#C9A227] transition-colors"
             >
-              <MessageCircle className="h-4 w-4" aria-hidden="true" />
-              Start a return on WhatsApp
+              <Mail className="h-4 w-4" aria-hidden="true" />
+              Start a return via email
             </a>
           </div>
         )}

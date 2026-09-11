@@ -5,9 +5,10 @@ import Link from 'next/link'
 import { ShoppingBag, ArrowLeft, Truck } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
 import { CartItemRow } from '@/components/cart/CartItem'
+import { translateCartProductId } from '@/lib/services/products'
 import { CartSummary } from '@/components/cart/CartSummary'
 import { ProductGrid } from '@/components/products/ProductGrid'
-import { getBestSellers, getProductsByOccasion } from '@/lib/services/products'
+import { getProductsByIds, getBestSellers } from '@/lib/services/products'
 import { SITE_CONFIG } from '@/lib/data/products'
 import { formatPrice } from '@/lib/utils'
 import type { Product } from '@/types/product'
@@ -24,7 +25,16 @@ export default function CartPage() {
   useEffect(() => {
     const productId = items[0]?.productId
     if (productId) {
-      getProductsByOccasion('everyday', 4).then(setRecommendations)
+      // Translate mock ID to Supabase UUID if needed, then look up products
+      const translatedId = translateCartProductId(productId)
+      getProductsByIds([translatedId]).then(products => {
+        // If product not found in mock data (Supabase UUID), fetch from Supabase or fallback
+        if (products.length > 0) {
+          setRecommendations(products)
+        } else {
+          setRecommendations([])
+        }
+      })
     } else {
       getBestSellers(4).then(setRecommendations)
     }

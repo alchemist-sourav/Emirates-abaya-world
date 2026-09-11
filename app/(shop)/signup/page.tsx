@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight, Check } from 'lucide-react'
 import { Logo } from '@/components/layout/Logo'
+import { createClient } from '@/lib/supabase/client'
 
 function getStrength(pw: string): { score: number; label: string } {
   if (pw.length === 0) return { score: 0, label: '' }
@@ -28,6 +29,7 @@ const STRENGTH_COLORS: Record<number, string> = {
 
 export default function SignupPage() {
   const router = useRouter()
+  const supabase = createClient()
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
@@ -35,10 +37,11 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [agreed, setAgreed] = useState(true)
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const strength = getStrength(password)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (firstName.trim().length < 2) {
       setError('Please enter your first name.')
@@ -61,7 +64,32 @@ export default function SignupPage() {
       return
     }
     setError('')
-    router.push('/account')
+    setIsSubmitting(true)
+
+    try {
+      const result = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: `${firstName.trim()} ${lastName.trim()}`,
+          }
+        }
+      })
+
+      const authError = result.error
+
+      if (authError) {
+        setError(authError.message)
+        setIsSubmitting(false)
+        return
+      }
+
+      router.push('/account')
+    } catch (err: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) {
+      setError(err?.message || 'An unexpected error occurred.')
+      setIsSubmitting(false)
+    }
   }
 
   const inputClass =
@@ -209,9 +237,10 @@ export default function SignupPage() {
 
             <button
               type="submit"
-              className="w-full inline-flex items-center justify-center gap-2 bg-[#111111] text-white text-sm font-semibold py-3.5 rounded-full hover:bg-[#C9A227] hover:text-[#111111] transition-colors uppercase tracking-wider"
+              disabled={isSubmitting}
+              className="w-full inline-flex items-center justify-center gap-2 bg-[#111111] text-white text-sm font-semibold py-3.5 rounded-full hover:bg-[#C9A227] hover:text-[#111111] transition-colors uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create Account
+              {isSubmitting ? 'Creating Account...' : 'Create Account'}
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </button>
           </form>

@@ -5,15 +5,18 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react'
 import { Logo } from '@/components/layout/Logo'
+import { createClient } from '@/lib/supabase/client'
 
 export default function LoginPage() {
   const router = useRouter()
+  const supabase = createClient()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email.includes('@')) {
       setError('Please enter a valid email address.')
@@ -24,7 +27,38 @@ export default function LoginPage() {
       return
     }
     setError('')
-    router.push('/account')
+    setIsSubmitting(true)
+
+    try {
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      if (authError) {
+        setError(authError.message)
+        setIsSubmitting(false)
+        return
+      }
+
+      // Check role
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single()
+
+      if (profile?.role === 'admin' || profile?.role === 'staff') {
+        router.push('/admin')
+      } else {
+        const searchParams = new URLSearchParams(window.location.search)
+        const redirect = searchParams.get('redirect')
+        router.push(redirect || '/account')
+      }
+    } catch (err: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) {
+      setError(err?.message || 'An unexpected error occurred.')
+      setIsSubmitting(false)
+    }
   }
 
   const inputClass =
@@ -111,9 +145,10 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className="w-full inline-flex items-center justify-center gap-2 bg-[#111111] text-white text-sm font-semibold py-3.5 rounded-full hover:bg-[#C9A227] hover:text-[#111111] transition-colors uppercase tracking-wider"
+              disabled={isSubmitting}
+              className="w-full inline-flex items-center justify-center gap-2 bg-[#111111] text-white text-sm font-semibold py-3.5 rounded-full hover:bg-[#C9A227] hover:text-[#111111] transition-colors uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Sign In
+              {isSubmitting ? 'Signing In...' : 'Sign In'}
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </button>
           </form>

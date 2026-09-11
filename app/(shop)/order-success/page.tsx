@@ -3,7 +3,7 @@
 import React, { Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { CheckCircle2, Package, MessageCircle, ShoppingBag, ArrowRight } from 'lucide-react'
+import { CheckCircle2, Package, Mail, ShoppingBag, ArrowRight } from 'lucide-react'
 import { SITE_CONFIG } from '@/lib/data/products'
 import { formatPrice } from '@/lib/utils'
 
@@ -12,12 +12,9 @@ function OrderSuccessContent() {
   const orderNumber = searchParams.get('order') ?? ''
   const config = SITE_CONFIG
   const isIndia = config.currency === 'INR'
-  const brand = config.businessName
   const deliveryEstimate = isIndia ? '4–7 business days' : '1–3 business days (UAE)'
   const dispatchWindow = isIndia ? '24–48 hours' : '24 hours'
-  const whatsappLink = `https://wa.me/${config.whatsappNumber.replace(/\D/g, '')}?text=${encodeURIComponent(
-    `Hi ${brand}! I just placed an order (${orderNumber}) and wanted to confirm the details.`
-  )}`
+  const supportEmail = config.supportEmail
 
   return (
     <div className="bg-[#F8F6F2]">
@@ -79,13 +76,11 @@ function OrderSuccessContent() {
         </div>
 
         <a
-          href={whatsappLink}
-          target="_blank"
-          rel="noopener noreferrer"
+          href={`mailto:${supportEmail}?subject=Order ${orderNumber} - Need Help`}
           className="inline-flex items-center justify-center gap-2 mt-4 text-sm text-[#111111] hover:text-[#C9A227] transition-colors"
         >
-          <MessageCircle className="h-4 w-4" aria-hidden="true" />
-          Need help? Chat with us on WhatsApp
+          <Mail className="h-4 w-4" aria-hidden="true" />
+          Need help? Email order support
         </a>
       </div>
     </div>

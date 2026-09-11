@@ -36,19 +36,19 @@ const FAQS = [
     topic: 'Orders & Sizing',
     icon: Ruler,
     q: 'How do I choose my size and length?',
-    a: 'Each product page lists sizes (XS–2XL) and available lengths. For a perfect fit, check the size guide on the product page, or message us your height on WhatsApp and our stylists will recommend a length.',
+    a: 'Each product page lists sizes (XS–2XL) and available lengths. For a perfect fit, check the size guide on the product page, or contact our client care team via email/phone and our stylists will recommend a length.',
   },
   {
     topic: 'Orders & Sizing',
     icon: Ruler,
     q: 'Do you offer custom lengths?',
-    a: 'Yes. Every EMIRATES abaya is cut in-house, so we can adjust length for a modest fitting. Select “Custom Length” on the product page or tell us on WhatsApp and we will confirm the details.',
+    a: 'Yes. Every EMIRATES abaya is cut in-house, so we can adjust length for a modest fitting. Select “Custom Length” on the product page or contact us and we will confirm the details.',
   },
   {
     topic: 'Orders & Sizing',
     icon: Shirt,
     q: 'Can I cancel or change my order?',
-    a: 'Orders can be changed or cancelled within 2 hours of placing them, as long as the piece has not entered production. Message us on WhatsApp with your order number and we will do our best to help.',
+    a: 'Orders can be changed or cancelled within 2 hours of placing them, as long as the piece has not entered production. Email us with your order number and we will do our best to help.',
   },
   {
     topic: 'Fabric & Material Care',
@@ -133,7 +133,7 @@ export default function FaqPage() {
         {/* Accordion */}
         {filtered.length === 0 ? (
           <p className="text-center text-sm text-gray-500 py-12">
-            No answers match your search. Try a different keyword or contact us on WhatsApp.
+            No answers match your search. Try a different keyword or contact our client care.
           </p>
         ) : (
           <div className="space-y-3 mb-12">

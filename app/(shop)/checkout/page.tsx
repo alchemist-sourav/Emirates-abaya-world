@@ -6,7 +6,8 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { ShieldCheck, CreditCard, Smartphone, Building, Wallet, Package, ArrowLeft, Lock } from 'lucide-react'
 import { useCartStore } from '@/store/cart'
-import { createOrder, getSiteConfig } from '@/lib/services/products'
+import { getSiteConfig } from '@/lib/services/products'
+import { processCheckout, type CheckoutInput } from '@/lib/actions/checkout'
 import { formatPrice } from '@/lib/utils'
 
 interface FormData {
@@ -135,10 +136,31 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true)
     try {
-      const { orderNumber } = await createOrder({ formData, items, total, payment, delivery })
+      const checkoutInput: CheckoutInput = {
+        email: formData.email,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.mobile,
+        shippingAddress: {
+          house: formData.house,
+          area: formData.area,
+          city: formData.city,
+          state: formData.state,
+          country: formData.country,
+          pinCode: formData.pinCode,
+        },
+        deliveryMethod: delivery as 'standard' | 'express' | 'pickup',
+        paymentMethod: payment as 'card' | 'cod' | 'upi',
+        couponCode: applied ? coupon : undefined,
+        items,
+      }
+
+      const result = await processCheckout(checkoutInput)
       clearCart()
-      router.push(`/order-success?order=${orderNumber}`)
-    } catch {
+      router.push(`/order-success?order=${result.orderNumber}`)
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Order could not be placed. Please try again.'
+      setErrors({ firstName: message })
       setIsSubmitting(false)
     }
   }

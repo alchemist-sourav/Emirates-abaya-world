@@ -12,7 +12,7 @@ import { PinCodeCheck } from '@/components/products/PinCodeCheck'
 import { useCartStore } from '@/store/cart'
 import { useWishlistStore } from '@/store/wishlist'
 import { useRecentlyViewedStore } from '@/store/recently-viewed'
-import { getSiteConfig } from '@/lib/services/products'
+import { translateCartProductId, getSiteConfig } from '@/lib/services/products'
 import { formatPrice, discountPercent } from '@/lib/utils'
 import type { Product } from '@/types/product'
 import { cn } from '@/lib/utils'
@@ -89,7 +89,7 @@ export function ProductDetailClient({ product }: Props) {
     cartItemSeq.current += 1
     addToCart({
       id: `${product.id}-${cartItemSeq.current}`,
-      productId: product.id,
+      productId: translateCartProductId(product.id),
       name: product.name,
       price: product.price,
       currency: product.currency,
@@ -131,13 +131,6 @@ export function ProductDetailClient({ product }: Props) {
       })
       toast.success('Added to wishlist!')
     }
-  }
-
-  const handleWhatsApp = () => {
-    const msg = encodeURIComponent(
-      `Hi! I'm interested in ${product.name} (SKU: ${product.sku}). Could you please help me with ordering?`
-    )
-    window.open(`https://wa.me/${config.whatsappNumber.replace(/\D/g, '')}?text=${msg}`, '_blank')
   }
 
   const outOfStock = product.stock === 0
@@ -312,31 +305,14 @@ export function ProductDetailClient({ product }: Props) {
             {outOfStock ? 'Out of Stock' : 'Add to Cart'}
           </button>
 
-          <div className="grid grid-cols-2 gap-2.5">
-            <button
-              type="button"
-              onClick={handleBuyNow}
-              disabled={outOfStock}
-              className="py-3.5 bg-[#D4956A] text-white font-semibold text-sm tracking-wide rounded-full hover:bg-[#C98557] transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
-            >
-              <span>Buy Now</span>
-              {/* GPay icon */}
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 24" className="h-5 w-auto" aria-hidden="true">
-                <text y="18" fontSize="14" fontWeight="700" fontFamily="Arial,sans-serif" fill="#fff" opacity="0.9">G</text>
-                <text x="13" y="18" fontSize="14" fontWeight="400" fontFamily="Arial,sans-serif" fill="#fff" opacity="0.9">Pay</text>
-              </svg>
-              {/* PhonePe icon circle */}
-              <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-white/20 text-white text-[9px] font-black leading-none">Pe</span>
-            </button>
-            <button
-              type="button"
-              onClick={handleWhatsApp}
-              disabled={outOfStock}
-              className="py-3.5 border border-gray-300 text-[#111111] font-semibold text-sm rounded-full hover:bg-gray-50 transition-colors disabled:opacity-40"
-            >
-              WhatsApp Order
-            </button>
-          </div>
+<button
+            type="button"
+            onClick={handleBuyNow}
+            disabled={outOfStock}
+            className="w-full py-3.5 bg-[#D4956A] text-white font-semibold text-sm tracking-wide rounded-full hover:bg-[#C9A227] transition-colors disabled:opacity-40"
+          >
+            Buy Now
+          </button>
 
           {/* ── Secure Payment Strip ── */}
           <div className="rounded-xl border border-[#E8E4DF] bg-[#FAFAF9] px-4 py-3">
